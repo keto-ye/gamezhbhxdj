@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>纵横捭阖修道界！</title>
+
+<!-- 数据及操作函数 -->
+<script>       
+    num_event = 18;  // 事件数
+    event_now = 0;  // 初始化以免报错
+    const event_names = {
+        1: "你们不要再打了啦",
+        2: "你们关系很好吗",
+        3: "物资调动",
+        4: "门派冲突",
+        // 5: "举办宴会",
+        5: "弹劾", 
+        6: "华彩宝灯",
+        7: "挑事",
+        8: "我要做课业",
+        9: "借地炼丹",
+        10: "又见面了",
+        11: "秘境遗迹",
+        12: "流言止于智者",
+        13: "最强道尊",
+        14: "大钟失窃",
+        15: "石狮子之乱",
+        16: "拍卖会",
+        17: "南枫客",
+        18: "像□□的布偶",
+        19: "极品灵草",
+
+        142: "收回大钟",
+    };
+    const event_description = {
+        1: "难怪最近没看见两位道尊——李伏和封铮在东岳的山巅打得不可开交，都不知打了多少天了。<br>如果没人能帮李伏劝住封铮，他们将继续打下去，不会出现在其他事件中。",
+        2: "封铮的态度充满敌意。<br>总之，郦自衡今天必须得解释清楚，为什么玲总是帮他。",
+        3: "“物资调动”是个正经名头，但郦掌门调来调去，最后总会有些东西不见踪影。冯长老受够了这种贪污的恶行。<br>郦自衡在此事件中胜利时，他的筹备进度增加。",
+        4: "冲突是两岳的常态。今天，又有两拨人正在对峙，为了利益或者恩怨。<br>赢家的势力值会增加，赢家的同盟亦然。",
+        // 5: "或许是因为发生了好事、为了联络感情，或者只是因为太闲，有人提议举办宴会。",
+        5: "冯长老终于掌握了郦自衡贪污的证据。他向掌门发起弹劾。<br>郦自衡在此事件中失败时，他的筹备进度减少。",
+        6: "华彩宝灯——由归藏门炼制、被前后两任掌门许诺送给陆英华，却又被齐瀚抢走的，修道界第一等的奇珍异宝，如今到底该归谁？每次陆英华有不顺心，就要把此事摆上台面争一争。",
+        7: "秦直渴望有一块自己的地盘，而非呆在李伏手底下。所以，他有时会来西岳挑点事，寻找机遇。<br>（他最喜欢古柯宗，偶尔也去别的地方试试。）",
+        8: "白澈是个很乖、很老实的后辈；所以总有人想使唤他干活，或带他出去玩。但是今天真的不行！因为他的课业要做不完了。",
+        9: "姜月茗会在任何地方炼丹——任何地方。然后，此地会烟熏火燎，灵力干涸；所以大家都衷心期望她别来。",
+        10: "人们有时候会在某个禁地里发现秦直，后者通常在睡觉、弹琴、或者尝试边睡觉边弹琴。没人知道他是什么时候溜进去的。<br>虽然秦直没有恶意，但管理者们还是得请他出去。",
+        11: "两岳曾流行过建造秘境，埋进山脉，千年后再重新现世。建造者们以为，后人会惊艳于上古的传承。然而，从今日的眼光看，那些奖励太太太过时了。<br>秘境挡路，得有人拆了它。",
+        12: "陆绮想知道，是谁乱传她同时谈了五个？是谁？？她根本一个都没谈！他们只是她，呃，比较亲密的朋友。<br>陆绮会到处质问，直到把造谣者抓出来为止。",
+        13: "封铮和李伏，到底谁是全修道界最强的道尊？又有一群人为此吵起来了。<br>如果不能平息骚乱，此地的势力值将会降低。",
+        14: "此事说来十分离奇：在淮山的山峰顶上，放了千百年的大钟，竟然在一夜之间不翼而飞了。<br>淮山的人正在到处找钟。许多人不配合调查。",
+        15: "前任归藏门掌门白禧留下的石狮子突然活过来了。它到处乱扑，已经毁了九道墙、三座院子，和一株千年古树。<br>如果不能降伏它，归藏门的势力值将会降低。",
+        16: "古柯宗的拍卖会在两岳名头最响。灵铢如流水般涌入，争夺那些珍稀的、奢华的、百无禁忌的拍卖品。古柯宗不讲法度，但至少今天有一项原则：价高者得。<br>有两个人看中了同一件东西。",
+        17: "“南枫客”是世上最香醇也最醉人的酒，它产量稀少，连真人们也难得一品。今日，谁能有幸得到这坛南枫客？依两岳的传统，它属于酒量最好，今天最后一个醉倒的人。",
+        18: "一款布偶忽然在两岳流行起来。无论看发型、衣着，还是表情，它都像极了——那一位。众修士支支吾吾。<br>趁道尊李伏还没发现这些像他的布偶，陆守非必须遏止住不敬的风潮。",
+        19: "灵草的品质太容易受影响：阳光、雨露、土壤、灵气，甚至风向。今天，一株品质极佳的灵草成为了两人争夺的目标。",
+    
+        142: "秦直真人——唉——秦直真人啊。不论如何，淮山的大钟终于找到了。下一步是拿它回去。"
+    };
+    // 事发地
+    const event_place = {  // 0意味着无，'2'意味着取势力2，'n'意味着双方随机1个
+        1: 0, 2: 1, 3: 1, 4: 'n', 5: 1, 6: 'n', 7: '2', 8: 'n', 9: '2', 10: '2', 11: '2', 12: '2', 13: '2', 14: 4, 15: 3, 16: 2, 17: 0, 18: 5, 19: 'n', 142: 4
+    }
+    event_charac_side1 = {  // 事件的势力方1的角色 注意如果只有一个0，应在side2而非1
+        1: 4, 2: 3, 3: 2, 4: 0, 5: 13, 6: 8, 7: 10, 8: 11, 9: 9, 10: 10, 11: 0, 12: 12, 13: 0, 14: 18, 15: 105, 16: 0, 17: 0, 18: 106, 19: 0, 142: 7
+    };
+    event_charac_side2 = {  // 事件的势力方2的角色
+        1: 3, 2: 2, 3: 13, 4: 0, 5: 2, 6: 6, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 5, 16: 0, 17: 0, 18: 19, 19: 0, 142: 10
+    };
+    // 事件相关的标记变量
+    fighting = true;  // 封李是否在打架
+    clockback = false;  // 钟是否回来
+    event_count = Array.from({ length: num_event+1 }, (val, i) => 0) ;  // 事件次数
+    // 角色
+    num_charac = 19;
+    const characters = {
+        0: "",
+        1: "玲",
+        2: "郦自衡",
+        3: "封铮",
+        4: "李伏",
+        5: "白圭",
+        6: "齐瀚",
+        7: "澹台涛",
+        8: "陆英华",
+        9: "姜月茗",
+        10: "秦直",
+        11: "白澈",
+        12: "陆绮",
+        13: "冯长老",
+        14: "袁尚",
+        15: "白露",
+        16: "余敏亭",
+        17: "周纪",
+        18: "孟蝶",
+        19: "陆守非",
+
+        101: "普通的秘境",
+        102: "危险的秘境",
+        103: "极危险的秘境",
+        104: "争执的修士",
+        105: "石狮子",
+        106: "布偶风波",
+    };
+    const charac_descrip = {
+        0: "",
+        1: "说客：游说失败时，不消耗行动点",
+        2: "美姿容：游说秦直、陆绮时，有50%概率不消耗行动点",
+        3: "情种：被玲招募时，不消耗行动点<br>武痴：被玲之外的人招募时，有80%的概率失败<br>寡言：行动点-1",
+        4: "大忙人：被招募时，有50%的概率失败；白澈不受该特性影响",
+        5: "挚友：招募陆英华时不消耗行动点<br>慈父：被白澈招募时，不消耗对方的行动点",
+        6: "无尽踪：敌方所有境界不高于自己的法修的影响力-20%<br>多疑：被招募时有50%概率失败",
+        7: "空性：对抗中，敌方所有境界不高于自己的武修的影响力-20%<br>不想干活：被招募时有50%的概率失败",
+        8: "化神第一：影响力+20%<br>挚友：招募白圭时不消耗行动点<br>母亲：被陆绮游说时，有50%概率不消耗对方的行动点",
+        9: "丹修：行动点+1；影响力-40%",
+        10: "师侄：被齐瀚游说时，有50%概率不消耗对方的行动点<br>强控：敌方所有境界不高于自己的角色影响力-20%<br>墙头草：成为敌方角色时，亦可以被游说，招募成功率50%",
+        11: "乖孩子：被李伏、白圭招募时，不消耗对方的行动点",
+        12: "女儿：被陆英华招募时，有50%概率不消耗对方的行动点<br>骄纵：被境界不高于自己的角色招募时，有50%概率失败",
+        13: "",
+        14: "旧怨：不能游说归藏门势力的角色",
+        15: "红人：游说归藏门的角色时，有50%概率不消耗行动点",
+        16: "过劳：行动点-1",
+        17: "情报贩子：敌方随机一名化神及以下角色影响力-40%",
+        18: "僧值：在淮山事务中，驱逐敌方随机一名元婴及以下角色",
+        19: "",
+
+        101: "",
+        102: "",
+        103: "",
+        104: "",
+        105: "",
+        106: "",
+    }; 
+    const charac_status = {
+        2: ["凌虚阁掌门", "在凌虚阁事务中，影响力+40%"],
+        4: ["东岳领导者", "在东岳事务中，影响力+40%"],
+        5: ["归藏门掌门", "在归藏门事务中，影响力+40%"],
+        6: ["古柯宗掌门", "在古柯宗事务中，影响力+40%"],
+        7: ["淮山掌门方丈", "在淮山事务中，影响力+40%"],
+        8: ["陆家家主", "在东岳事务中，影响力+40%"],
+        13: ["凌虚阁长老", "在凌虚阁事务中，影响力+20%"],
+        14: ["古柯宗骨干", "在古柯宗事务中，影响力+20%"],
+        16: ["归藏门管事", "在归藏门的事务中，影响力+20%"],
+        19: ["陆家主事", "在东岳自身事务中，影响力+20%"],
+    }
+    const sides = {  // 所有势力
+        0: "",
+        1: "凌虚阁",
+        2: "古柯宗",
+        3: "归藏门",
+        4: "淮山",
+        5: "东岳",
+    };
+    side_character = {  // 门派包含的角色
+        1: [2,13],
+        2: [6,14,17],
+        3: [5,15,16],
+        4: [7,18],
+        5: [4,8,9,11,12,19],
+    }
+    charac_side = {  // 角色的势力归属
+        0: 0, 1: 0, 2: 1, 3: 0, 4: 5, 5: 3, 6: 2, 7: 4, 8: 5, 9: 5, 10: 0, 
+        11: 5, 12: 5, 13: 1, 14: 2, 15: 3, 16: 3, 17: 2, 18:4, 19:5, 101:0,102:0,103:0,104:0,105:0,106:0,
+    }
+    event_charac_side1_may = { // 可能的势力方1的角色
+        11: [101, 102, 103], 
+        13: [104, 10],
+        16: [6, 9, 2],
+        17: [5, 6, 7, 8, 9, 10],
+    }
+    event_charac_side2_may = {  // 可能的势力方2的角色
+        7: [6, 6, 6, 6, 6, 6, 2, 2, 5, 7],  // 总之去古柯宗的概率很高
+        8: side_character[3].concat(side_character[5]).filter(item => item !== 11),
+        9: Array.from({ length: num_charac - 4 }, (val, i) => i + 5).filter(item => item !== 9),
+        10: [2, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19],
+        11: Array.from({ length: num_charac - 1 }, (val, i) => i + 2).filter(item => item !== 10),
+        12: [2, 11, 13, 14, 15, 16, 17, 18, 19],
+        13: [2, 11, 13, 14, 15, 16, 17, 18, 19],
+        14: Array.from({ length: num_charac - 1 }, (val, i) => i + 2).filter(item => item !== 18),
+        16: [5, 7, 8, 10],
+        17: [5, 6, 7, 8, 9, 10],
+    };
+    // 不消耗次数+必成功的游说组合 游: 被游
+    nominus_suc = {
+        1: [3],
+        4: [11],
+        5: [8, 11],
+        11: [5]
+    };
+    // 0.5消耗次数+必成功 游: 被游
+    mayminus_suc = {
+        2: [10,12],
+        6: [10],
+        15: [5,16],
+        12: [8],
+        8: [12],
+        15: [5,16]
+    };
+    // 竞争说服反应 关系>同势力>其他[选高修为（一样时退场）, 退场,弹窗事件] 
+    // 1,2,3不出现 
+    compete = [[6,13,19], [4,5,7,11,14,15,16,17,18], [8,9,10,12]]
+    // 影响力系数
+    coef = [10, 5, 1, 0];
+    // 各影响力系数对应的角色
+    charac_coef = [[3, 4, 103], [5, 6, 7, 8, 9, 10, 102, 105, 106], [2, 12, 13, 13, 14, 15, 16, 17, 19, 101, 104], [1, 11, 18]];
+    // 对应的修为
+    level = ["出窍", "化神", "元婴", "金丹"]
+    // 角色对其他角色的影响 
+    byqi = [1,2,5,10,15,16,17]  // 被齐瀚-1
+    bydan = [6,8,11,12,13,14,18,19]  // 被澹台涛-1
+    byqin = [1,2,5,6,7,8,9,11,12,13,14,15,16,17,18,19]  // 被秦-1
+    // 角色对己影响
+    effect_self_all = { //全局
+        8:1,
+        9:-2,
+        105:4
+    }
+    effect_self_place = { //地点 '角色-势力':点数
+        '2-1':2,
+        '6-2':2,
+        '5-3':2,
+        '8-5':2,
+        '7-4':2,
+        '13-1':1,
+        '14-2':1,
+        '16-3':1,
+        '4-5':2,
+        '19-5':1
+    }
+    pops = {  // 每个变量由三个value控制：n-1 主题文字 n-2 按钮 n-3 各按钮反馈(new_output) 
+    // c开头是竞争游说弹窗
+        's1-1': '封铮问：“有什么需要我做的吗？”',
+        's1-2': ['想要你参与事件', '想要郦自衡还钱', '没有'],
+        's1-3': ['“好。”封铮说。(下一次加入事件时，封铮必定出现)', '“好。”封铮说。(郦自衡的筹备进度下降了)', '“好。”封铮说。'],
+        'c10-1': '秦直问：“等等，你们都想让我帮忙？那你先说说看，我和郦自衡谁更帅？”',
+        'c10-2': ['您', '郦自衡', '(喊封铮)“封铮，秦直真人来了——”'],
+        'c10-3': ['秦直赞许：“有眼光！”(秦直加入己方)', '秦直不爽：“真没眼光！”(秦直加入敌方)', '秦直大惊失色：“别，别喊他啊！”(秦直逃走了)'],
+        'c9-1': '“争起来了？明明只是小事嘛。这样吧，如果你们帮我试药，我就帮你。”姜月茗递出丹药。',
+        'c9-2': ['服下', '拒绝', ''],
+        'c9-3': ['糟糕，是毒丹。(己方角色的行动点归零)“嗯……”姜月茗陷入思考。(姜月茗加入己方)', '“真可惜。”姜月茗说。(姜月茗离开了)', ''],
+        'c8-1': '陆英华捏着一根发带，拿不定主意：“这根发带，是钉宝石好，还是绣金线好？',
+        'c8-2': ['宝石', '金线', '都会勾到头发'],
+        'c8-3': ['“陆绮也这么说。”陆英华说。(陆英华寻工匠去了)', '“是不错。”陆英华说。(陆英华寻工匠去了)', '“你扫不扫兴？行行行，不看了，走了。”陆英华说。(陆英华加入己方)'],
+        'c12-1': '陆绮头疼：“一时想不起来，我娘那只不见了的妆奁，是什么样子的来着？”',
+        'c12-2': ['黑漆描金牡丹纹妆奁', '黑漆描银花卉纹妆奁', '青花描银花鸟纹妆奁'],
+        'c12-3': ['“对对对，是这个。”陆绮高兴地说。(陆绮加入己方)', '“不对吧。”陆绮说。(陆绮离开)', '“青花描银？哪有这种妆奁？你来捣乱的吗？”陆绮说。(陆绮加入敌方)'],
+    }
+    // 招募时的输出
+    talk_output = {  
+        // 成功的 '游+被游'或'被游+事件+势力方'或'+被游':output  形如 (敌方-陆英华加入)
+        // 失败的 '游/被游' '/被游'
+        '1+3': '封铮不关心他们今天要去散步、喂猫，还是威慑敌人。总之玲需要他，所以他来了。',
+        '2+10': '秦直奇了怪了：郦自衡分明是世上最不可信的人，可他说的话怎么听着那么有道理呢？',
+        '2+12': '陆绮回过神来，才发现自己已经答应帮郦自衡的忙了。算了，被俊俏男修糊弄也是人之常情。',
+        '2+13': '内讧归内讧，真遇上外敌，冯长老唯有捏着鼻子，和郦自衡站在一边。',
+        '2+17': '“老样子？”“老样子。”',
+        '4+11': '“来了——”白澈应声。',
+        '5+8': '陆英华二话不说，当场就拍桌子站起来了。',
+        '5+11': '“来了——”白澈应声。',
+        '6+10': '秦直习惯于被师叔叫来干活，也习惯于敷衍了事。',
+        '6+14': '袁尚应声称是。',
+        '8+5': '得知情况后，白圭立即前来帮忙。',
+        '8+12': '“知道啦。”陆绮答。',
+        '11+4': '李伏很忙，许多人根本没机会见到他。当然，他那遇事慌慌张张的小徒弟是例外。',
+        '11+5': '想要什么东西？想做什么事情？白圭给白澈的回答总是“当然可以”。',
+        '12+8': '“娘——帮帮忙——”陆绮用四个字喊来了当世最强的化神真人。',
+        '18+7': '澹台涛被一句“师父！大事不好了！”吵醒。他打着哈欠来了。',
+        '+10': '秦直爽快同意。反正闲着也是闲着。',
+        '+16': '余敏亭长叹一口气，顶着黑眼圈来了。',
+        '+17': '钱货两讫，童叟无欺——只要花钱，谁都能买到周纪的支持。',
+        // '13-2': '冯长老确信郦自衡没安好心。反对他准没错。', // '废弃 被游-敌
+        '10/6': '没人知道秦直说了什么，但他显然惹恼了齐瀚。齐瀚将他的师侄轰出门外，附赠一个字：“滚。”',
+        '/4': '道尊今天没能抽出事件见客。他要管辖整个东岳，实不可能事事过问。',
+        '/6': '齐瀚起了疑心。他没有被说动。',
+        '/7': '澹台涛真人在哪？人们面面相觑，谁也答不上来。',
+        '/12': '“没空。”陆绮头也不抬，“我娘的黑漆描金牡丹纹妆奁不见了，我正帮忙着找呢。”',
+    }
+    // 用来添加标签 
+    // addlabeltitle[0] + 悬浮内容 + addlabeltitle[1] + 标签 + addlabeltitle[2]
+    // addlabel[0] + 标签 + addlabel[1]
+    addlabel = ['<br><br><em style="font-size:14px;">', '</em>']
+    addlabeltitle = ['<em style="font-size:14px;" title="', '">, ', '</em>']
+
+    // 弹窗 结局
+    function show_modals_end(output){
+        document.getElementById("modalText").innerHTML = output;
+        document.getElementById("modalbutton1").style.display = 'none'; 
+        document.getElementById("modalbutton2").style.display = 'none'; 
+        document.getElementById("modalbutton3").style.display = 'none'; 
+        document.getElementById("endbutton").innerHTML = '结束';
+        document.getElementById("endbutton").style.display = 'block';
+        document.getElementById('Modals').style.display = 'block';      
+        update_output(output);  
+    }
+    // 弹窗 选择事件
+    function show_modals(which_p){
+        document.getElementById("modalText").innerHTML = pops[which_p + "-1"];
+        update_output(pops[which_p + "-1"])  // 也写入进展
+        var buttontxt = pops[which_p + "-2"]
+        for(var n=0;n<buttontxt.length;n++){
+            var db = document.getElementById("modalbutton" + (n+1).toString())
+            if (buttontxt[n] != ""){
+                db.innerHTML = buttontxt[n];
+                db.style.display = 'block';}
+            else {db.style.display = 'none';}
+        }
+        document.getElementById("endbutton").style.display = 'none';
+        document.getElementById('Modals').style.display = 'block';  
+    }
+    // 处理模态框按钮点击
+    function handlemodals1() {handlemodals(0)}
+    function handlemodals2() {handlemodals(1)}
+    function handlemodals3() {handlemodals(2)}
+    function handlemodals(choice) {
+        c_add_e = parseInt(which_p.substring(1))
+        document.getElementById('Modals').style.display = 'none';
+        new_output = '选择了[' + pops[which_p + "-2"][choice] + ']<br>' + pops[which_p + "-3"][choice];
+        if ((which_p == "c10" && choice == 0) || (which_p == "c9" && choice == 0)
+        || (which_p == "c8" && choice == 2)|| (which_p == "c12" && choice == 0)){ // 所有己胜情况
+            suc = true;
+            suc_e = false;
+            if (which_p == "c9"){
+                for(var n=0;n<charac_our.length;n++)
+                {charac_action[charac_our[n]] = 0;}  //己方行动点全归0
+            }
+        }
+        else if ((which_p == "c10" && choice == 1)|| (which_p == "c12" && choice == 2)){
+            suc = false; // 所有敌胜情况
+            suc_e = true;
+        }
+        else if (which_p == "s1"){ // 封铮特殊弹窗
+            if (choice == 0){
+                if (event_now >2){
+                charac_totalk[0] = 3;
+                update_totalk();  // 封铮必出现
+            }
+            }  
+            else if (choice == 1) {
+                car = document.getElementById("carry")
+                mp1 = document.getElementById("menpai1")
+                mp1.value += car.value*0.4;
+                car.value -= car.value*0.4;
+            }
+        }
+        else{ // 竞争双输
+            suc = false; 
+            suc_e = false;
+            charac_totalk[charac_totalk.indexOf(c_add_e)] = 0;
+            update_totalk();
+        } 
+        update_output(new_output)
+        if (which_p != "s1"){
+        talk_result();}   // 弹窗竞争在此处结算
+    }
+    function endmodal(){document.getElementById('Modals').style.display = 'none';}
+
+    // 更新角色
+    function update_charac(styleplay, stylenone, idn, charac_list){
+        for(var n=0;n<charac_list.length;n++)
+        {
+            characid = charac_list[n]
+            descElem = document.getElementById(idn + (n+1).toString() + "_desc");
+            tdElem = document.getElementById("td" + idn + (n+1).toString());
+            if (characid != 0)
+            {
+                Elem = document.getElementById(idn + (n+1).toString());
+                Elem.innerHTML = characters[characid]
+                descElem.innerHTML = charac_descrip[characid];
+                // add label
+                if (byqi.includes(characid))
+                {descElem.innerHTML += addlabel[0] + "法修" + addlabel[1];}
+                else if (bydan.includes(characid) || characid == 7)
+                {descElem.innerHTML += addlabel[0] + "武修" + addlabel[1];}
+                if (charac_status.hasOwnProperty(characid))
+                {descElem.innerHTML += (addlabeltitle[0] + charac_status[characid][1] 
+                    + addlabeltitle[1] + charac_status[characid][0] + addlabeltitle[2]);}
+                descElem.parentNode.style = tdstyle;
+                tdElem.style = tdstyle;
+                // 影响力元素
+                const container = document.getElementById(`td${idn}${n+1}`);
+                // 在创建新的影响力元素前，移除已存在的元素
+                const existingInfluence = container.querySelector(`#influence_${idn}${n+1}`);
+                if (existingInfluence) {existingInfluence.remove();}
+                // 创建影响力数值元素
+                const influenceElem = document.createElement('div');
+                influenceElem.className = 'influence-value';
+                influenceElem.id = `influence_${idn}${n+1}`; // 生成唯一ID
+                // 插入到角色卡容器中
+                container.style.position = 'relative'; // 添加相对定位
+                container.appendChild(influenceElem);
+            }
+            else
+            {
+                tdElem.style = tdstylenone;
+                descElem.innerHTML = "";
+            }
+        }
+    }
+    
+    // 更新影响力数值的函数
+    function update_influence_values() {
+        // 更新所有角色卡
+        update_influence_group('cgo', charac_our);
+        update_influence_group('enemy', charac_enemy);
+        update_influence_group('ctotalk', charac_totalk);
+    }
+
+    function update_influence_group(prefix, charac_list) {
+        charac_list.forEach((characId, index) => {
+            if(characId !== 0) {
+                const elem = document.getElementById(`influence_${prefix}${index+1}`);
+                if(elem) {
+                    elem.textContent = effect_charac_weighted[characId];
+                }
+            }
+        });
+    }
+    // 更新己方角色
+    function update_our(){
+        tdstyle = "height:150px;width:100px;text-align:center;vertical-align:top;border-right:#000000 solid 1px;border-left:#000000 solid 1px;border-top:#000000 solid 1px;border-bottom:#000000 solid 1px;"
+        tdstylenone = "height:150px;width:100px;text-align:center;vertical-align:top;visibility:hidden;"
+        idname = "cgo"
+        update_charac(tdstyle, tdstylenone, idname, charac_our)
+    }
+    // 更新敌方角色
+    function update_enemy(){
+        tdstyle = "height:100px;width:100px;text-align:center;vertical-align:top;border-right:#000000 solid 1px;border-left:#000000 solid 1px;border-top:#000000 solid 1px;border-bottom:#000000 solid 1px;"
+        tdstylenone = "height:100px;width:100px;text-align:center;vertical-align:top;visibility:hidden;"
+        idname = "enemy"
+        update_charac(tdstyle, tdstylenone, idname, charac_enemy)
+    }
+    // 更新可招募角色
+    function update_totalk(){
+        // 如果敌方[1:]有秦直，可招募没有，则将秦加入
+        if (charac_enemy.includes(10) && charac_enemy[0]!=10 && !charac_totalk.includes(10))
+        {charac_totalk[charac_totalk.indexOf(0)] = 10;}
+        idname = "ctotalk"
+        tdstyle = "height:150px;width:100px;text-align:center;vertical-align:top;border-right:#000000 solid 1px;border-left:#000000 solid 1px;border-top:#000000 solid 1px;border-bottom:#000000 solid 1px;"
+        tdstylenone = "height:150px;width:100px;visibility:hidden;"
+        update_charac(tdstyle, tdstylenone, idname, charac_totalk)
+    }
+    // 更新行动点
+    function update_cango(){
+        for(var n=0;n<charac_our.length;n++)
+        {
+            cg = document.getElementById("cango" + (n+1).toString());
+            if (charac_our[n] == 0|| charac_our[n] >100)
+            {cg.innerHTML = ""}
+            else{
+                cg.innerHTML = "剩余行动点: " + charac_action[charac_our[n]].toString()
+            }
+            // 禁用/启用勾选框
+            cb = document.getElementById("charac_go" + (n + 1).toString());
+            cb.disabled = (charac_action[charac_our[n]] <= 0);
+        }
+        for(var n=0;n<charac_enemy.length;n++)
+        {
+            cg = document.getElementById("enecango" + (n+1).toString());
+            if (charac_enemy[n] == 0 || charac_enemy[n] >100)
+            {cg.innerHTML = ""}
+            else{cg.innerHTML = "剩余行动点: " + charac_action[charac_enemy[n]].toString();}
+            
+        }
+    }
+    // 输出事件进展
+    function update_output(new_out){
+        eventoutput = document.getElementById("eventoutput");
+        // 创建带样式的span
+        let styled_out = new_out;
+        if (new_out.includes("(敌方")) {
+            styled_out = '<span style="color: #8B0000;">' + new_out + '</span>';
+        } else if (new_out.includes("(己方")) {
+            styled_out = '<span style="color: #2A4F6E;">' + new_out + '</span>';
+        }
+        if (new_out!=''){eventoutput.innerHTML += styled_out + "<br>";}
+        scrollin = document.getElementById("scrollin");
+        scrollin.scrollTop = scrollin.scrollHeight;  // 自动滚动到最下方
+    }
+
+    // 初始化一局
+    function begin_game(){
+        new_event();
+        // 势力值随机20~80
+        menpais = document.querySelectorAll('#menpai1, #menpai2, #menpai3, #menpai4, #menpai5')
+        menpais.forEach(function(s) {
+            s.value = Math.floor(Math.random()*60) + 20
+        })
+        // 事件进展清空
+        eventoutput = document.getElementById("eventoutput");
+        eventoutput.innerHTML = ""
+        // 调查和转移进度=0
+        inv = document.getElementById("invest");  
+        inv.value = 0;
+        car = document.getElementById("carry");  
+        car.value = 0;
+        // 事件相关变量初始化
+        fighting = true;  // 封李是否在打架
+        clockback = false;  // 钟是否回来
+        event_count = Array.from({ length: num_event +1 }, (val, i) => 0)  // 事件次数,index+1为使用方便
+    }
+    // 随机角色
+    function random_c(sc){
+        if_high = (Math.random() > 0.9)  // 招来高阶的概率系数
+        cc = side_character[sc][Math.floor(Math.random()*side_character[sc].length)];
+        if (!if_high)
+        {
+            while(cc!=2 && cc<11)
+            {cc = side_character[sc][Math.floor(Math.random()*side_character[sc].length)];}
+        }
+        return cc
+    }
+    // 获得事发地
+    function get_place(){
+        switch (event_place[event_now]) {
+            case '2':
+                return charac_side[event_charac_side2[event_now]]
+            case 'n':
+                if (Math.random() > 0.5)
+                {return charac_side[event_charac_side1[event_now]];}
+                else
+                {return charac_side[event_charac_side2[event_now]];}
+            default:
+                return event_place[event_now]
+        }
+    }
+    // 事件4 门派冲突
+    function event4(){
+        // 门派
+        s1 = Math.floor(Math.random()*5) + 1;
+        s2 = s1*1
+        while (s2 == s1){
+            s2 = Math.floor(Math.random()*5) + 1;
+        }
+        // 角色
+        c1 = random_c(s1);
+        c2 = random_c(s2);
+        while (c1 == 11) {c1 = random_c(s1);}  // 小孩就别去了
+        while (c2 == 11) {c2 = random_c(s2);}
+        return  [c1,  c2]
+    }
+    // 事件7,8,9,10 从字典随机人物
+    function event_cfromdict(to_be)
+    {
+        if (fighting)
+        {to_be = to_be.filter(item => (item !== 3 && item !== 4));}  // 李封不在
+        cc = to_be[Math.floor(Math.random()*to_be.length)]
+        ss = charac_side[cc]
+        return cc
+    }
+    // 生成新事件
+    function new_event(){
+        try {   
+        // 特殊情况
+        // fighting = false  // DEBUG
+        if (!fighting && Math.random()>0.85) 
+        {
+            which_p = 's1';
+            show_modals(which_p);}  // 封铮特殊弹窗
+        if (!fighting && Math.random()>0.85 && which_p != 's1' 
+            && event_now != 1) // 和上面的弹窗冲突且上一轮不是事件1
+        {
+            fighting = true;
+            show_modals_end("封铮又去丹峰挑战李伏了。接下来的事件中，他们不会出现。");
+        }
+        else {which_p = '';}  // 归零
+        // 事件序号
+        available_event = Array.from({ length: num_event }, (val, i) => i+1);
+        if (fighting)  // 是否包含1 2
+        {available_event = available_event.filter(item => item != 2);}
+        else{available_event = available_event.filter(item => item != 1);}
+        if (document.getElementById("carry").value < 50)  // 郦自衡进度低时不触发弹劾
+        {available_event = available_event.filter(item => item !== 5);}
+        // 陆绮问五次后弹窗，之后无事件12；大钟调查五次后弹窗，强制事件142，之后无事件14，142加入池直到成功
+        if (event_count[12] >= 4){available_event = available_event.filter(item => item !== 12);}
+        if (event_count[14] >= 4){available_event = available_event.filter(item => item !== 14);}
+        if (event_count[14] >= 4 && clockback == false){available_event.push(142);}
+        event_now = available_event[Math.floor(Math.random()*available_event.length)]
+        // TODO 事件概率？
+        // if (Math.random()>0.85){event_now = 4;}  // 改事件4概率
+        // event_now = 4 // DEBUG
+        event_count[event_now] += 1 // 累计次数
+        if (event_count[12] == 2){show_modals_end("多方调查后，陆绮终于发现，谣言竟然是从自己家里传出来的。<br>陆英华惊奇：“什么？原来哪个都不是吗？那个总拿着折扇的也不是？”<br>陆绮深吸一口气，大喊：“娘！！不要总盯着我和谁来往了！！”");}
+        if (event_count[14] == 2){show_modals_end("淮山的大钟终于找到了——某日，偷盗者兴冲冲地敲它，根本不避人，整个东岳都听见了。<br>澹台涛问：“你为什么偷我们的钟？”<br>秦直理直气壮：“淮山根本没有懂行的音修，这大钟给你们用简直是浪费。它归我了。”");
+            event_now = 142
+        }
+        // 事件信息
+        eve_name = document.getElementById("eve_name")
+        eve_name.innerHTML = event_names[event_now] 
+        eve_desc = document.getElementById("eve_desc")
+        side1charc = document.getElementById("side1charc")
+        side1 = document.getElementById("side1")
+        side2charc = document.getElementById("side2charc")
+        side2 = document.getElementById("side2")
+        eve_desc.innerHTML = event_description[event_now]
+        switch (event_now) {
+            case 4:
+            case 19:
+                [event_charac_side1[event_now], event_charac_side2[event_now]] = event4();
+                break;
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 12:
+            case 14:
+                event_charac_side2[event_now] = event_cfromdict(event_charac_side2_may[event_now]);
+                break;
+            case 11:
+            case 13:
+            case 16:
+                event_charac_side1[event_now] = event_cfromdict(event_charac_side1_may[event_now]);
+                event_charac_side2[event_now] = event_cfromdict(event_charac_side2_may[event_now]);
+                break;
+            case 17:
+                // 不重复
+                event_charac_side1[event_now] = event_cfromdict(event_charac_side1_may[event_now]);
+                event_charac_side2[event_now] = event_cfromdict(event_charac_side2_may[event_now
+                    ].filter(item => item != event_charac_side1[event_now]));
+                break;
+        }
+        side1charc.innerHTML = characters[event_charac_side1[event_now]]
+        side2charc.innerHTML = characters[event_charac_side2[event_now]]
+        // 角色修为+所属势力
+        for(var n=0;n<charac_coef.length;n++)
+        {
+            if (charac_coef[n].includes(event_charac_side1[event_now]))
+            {side1.innerHTML = '(' + sides[charac_side[event_charac_side1[event_now]]] + level[n] + ')';}
+            if (charac_coef[n].includes(event_charac_side2[event_now]))
+            {side2.innerHTML = '(' + sides[charac_side[event_charac_side2[event_now]]] + level[n] + ')';}
+            // 秘境不需要
+            if (event_charac_side1[event_now]>100){side1.innerHTML = '';}
+            if (event_charac_side2[event_now]>100){side2.innerHTML = '';}
+        }
+        // 事发地
+        ep_now = get_place()
+        eve_place = document.getElementById("place")   
+        eve_place.innerHTML = sides[ep_now]
+        hide_info()
+        // 己方角色
+        charac_our = [1, 0, 0, 0, 0, 0, 0, 0]
+        update_our()
+        // 敌方角色
+        charac_enemy = [0, 0, 0, 0, 0, 0, 0]
+        update_enemy()
+        // 生成可招募角色
+        charac_totalk = [0, 0, 0, 0, 0, 0];
+        notallowed = [1, 2, event_charac_side1[event_now], event_charac_side2[event_now]]
+        if (fighting == true)  // 封李打架
+        {
+            notallowed.push(3,4)
+        }
+        for (var i=0;i<5;i++)
+        {
+            var n = Math.floor(Math.random()*num_charac) + 1;
+            // 选事件不涉及，非玲和郦自衡，不重复的角色
+            if (!notallowed.includes(n) && !charac_totalk.includes(n))
+            {
+                charac_totalk[i] = n;
+            }
+            else
+            {
+                i--;
+            }
+        }  
+        update_totalk()
+        // 所有角色行动点
+        charac_action = Array.from({ length: num_charac+1 }, (val, i) => 1)
+        charac_action[3] = 0
+        charac_action[9] += 1
+        charac_action[16] = 0
+        charac_action[101] = 0
+        charac_action[102] = 0
+        charac_action[103] = 0
+        charac_action[104] = 0
+        charac_action[105] = 0
+        update_cango()
+        // 周纪和孟蝶的标记初始化
+        byzhou = ''
+        bymeng = ''
+        // 显示按钮
+        document.getElementById("joinside1").style.display = 'inline';
+        document.getElementById("joinside2").style.display = 'inline';
+        document.getElementById("eventdone").style.display = 'inline';
+        // 影响力
+        document.getElementById("ene_efftxt").innerHTML = ""
+        document.getElementById("our_efftxt").innerHTML = ""
+        effect_charac_weighted = {}  // 默认影响力
+        for (var i=0;i<charac_coef.length;i++){
+            for(var j=0;j<charac_coef[i].length;j++)
+            {effect_charac_weighted[charac_coef[i][j]] = coef[i]*5;}
+        }
+        update_influence_values();  // 更新影响力标签
+        // 分析
+        document.getElementById("analysisoutput").innerHTML = ""
+        } catch (error) {
+                console.error('错误发生在:', error);
+                alert('发生错误: ' + error.message);
+        }   
+    }
+
+    // 隐藏表格等信息
+    function hide_info(){
+        ene_chatxt = document.getElementById("ene_chatxt")
+        ene_chatxt.innerHTML = ""
+        ene_table = document.getElementById("ene_table").style.display = 'none'
+        totalktxt = document.getElementById("totalktxt")
+        totalktxt.innerHTML = ""
+        totalk_table = document.getElementById("totalk_table").style.display = 'none'
+        our_chatxt = document.getElementById("our_chatxt")
+        our_chatxt.innerHTML = ""
+        our_table = document.getElementById("our_table").style.display = 'none'
+        talk = document.getElementById("talk").style.display = 'none'
+        // 换行
+        brs = document.querySelectorAll('#br1, #br2, #br3')
+        brs.forEach(function(br) {
+            br.innerHTML = ""
+        })
+    }
+    // 显示游说等信息
+    function show_info(){
+        cal_effect()  // 影响力
+        ene_chatxt = document.getElementById("ene_chatxt")
+        ene_chatxt.innerHTML = "敌方角色：<br>"
+        ene_table = document.getElementById("ene_table").style.display = 'table'
+        totalktxt = document.getElementById("totalktxt")
+        totalktxt.innerHTML = "当前可招募的角色：<br>"
+        totalk_table = document.getElementById("totalk_table").style.display = 'table'
+        our_chatxt = document.getElementById("our_chatxt")
+        our_chatxt.innerHTML = "己方角色：<br>"
+        our_table = document.getElementById("our_table").style.display = 'table'
+        talk = document.getElementById("talk").style.display = 'table'
+        // 换行
+        brs = document.querySelectorAll('#br1, #br2, #br3')
+        brs.forEach(function(br) {
+            br.innerHTML = "<br>"
+        })
+    }
+    // 隐藏加入按钮
+    function update_join(){
+        b_jside1 = document.getElementById("joinside1").style.display = 'none';
+        b_jside2 = document.getElementById("joinside2").style.display = 'none';
+        if (event_now == 1)
+        {
+            if (charac_enemy[0] == 3)  // 郦自衡会阻碍封铮出场
+            {charac_enemy[1] = 2;}
+            else{charac_our[2] = 2;}
+            new_output = "没人比郦自衡更支持他们继续打下去。李伏与封铮不在，有利于他行事。";
+            update_output(new_output)
+        }
+        show_info()
+        update_our()
+        update_enemy()
+        update_cango()
+        update_influence_values();  // 更新影响力标签
+    }
+    // 选择加入势力后
+    function join_side1(){
+        charac_our[1] = event_charac_side1[event_now]
+        charac_enemy[0] = event_charac_side2[event_now]
+        update_join()
+    }
+    function join_side2(){
+        charac_our[1] = event_charac_side2[event_now]
+        charac_enemy[0] = event_charac_side1[event_now]
+        update_join()
+    }
+
+    // 敌人的招募
+    // 1 招募同势力角色，概率随机境界
+    // 2 招募友方势力角色，概率随机境界
+    // 3 郦自衡按特定顺序招募可招募角色 + 他的友方角色
+    // 4 郦自衡先手，其余按序列检查行动点
+    li_friends = [10, 12, 14, 17]  // 郦的友方角色
+    li_priority = [8, 6, 9, 7, 10, 5, 4]  // 招募陆齐>其他化神>李伏>元婴
+    function add_enemy(){
+        if ((charac_enemy[0] == 3 && charac_enemy[1] == 0) || charac_enemy[0]>100) 
+        {return [0, 0]} // 只有封铮或秘境，不add
+        to_add = []  // 可能招募到的角色
+        add_c = 0  // 被招募的角色
+        c_go_e = 0  // 去招募的敌方角色
+        if (charac_enemy.includes(2) && charac_action[2] > 0)
+        {
+            c_go_e = 2
+            to_add = li_friends.concat(charac_totalk)
+            to_add = to_add.filter(item => (item != 3 && charac_enemy.includes(item) 
+                == false && item != 0));
+            to_add = to_add.filter(item => (charac_our.includes(item) == false
+                || (item == 10 && charac_our[1]!=10)));  // 秦直为势力方时不能招募
+            if (event_now != 3 && event_now != 5){to_add.push(13);}  // 可以招到冯长老
+            if (charac_our.includes(10)){to_add.push(10);}  // 可以招到秦直
+            // 按顺序招
+            for (var i=0;i<li_priority.length;i++)
+            {
+                if (to_add.includes(li_priority[i]) != 0)
+                {
+                    add_c = li_priority[i];
+                    break;
+                }
+            }  
+            if (add_c == 0)  // 随机招募
+            {add_c = to_add[Math.floor(Math.random()*to_add.length)];}
+            charac_action[2] -= 1
+        }
+        else
+        {
+            if_high = (Math.random() > 0.8)  // 招来高阶的概率系数
+            for (var i=0;i<charac_enemy.length;i++)
+            {
+                if (charac_enemy[i] != 0 && charac_action[charac_enemy[i]] > 0)  // 这个人招募
+                {
+                    
+                    // 可招募同势力
+                    if (charac_side[charac_enemy[i]] != 0)
+                    {to_add = to_add.concat(side_character[charac_side[charac_enemy[i]]]);}
+                    // 特殊的友方角色
+                    if (charac_enemy[i] == 10){ // 秦直: 0.3白圭、0.3齐瀚
+                        if (Math.random()>0.7){to_add = to_add.concat([5]);}
+                        if (Math.random()>0.7){to_add = to_add.concat([6]);} 
+                    } 
+                    else if (charac_enemy[i] == 5){  // 白圭: 0.3秦直、陆英华
+                        to_add = to_add.concat([8]);
+                        if (Math.random()>0.7){to_add = to_add.concat([10]);}
+                    }
+                    else if (charac_enemy[i] == 8){  // 陆英华: 白圭
+                        to_add = to_add.concat([5]);
+                    }
+                    to_add = to_add.filter(item => (charac_our.includes(item) == false
+                        || item == 10));
+                    to_add = to_add.filter(item => (item != 3 && charac_enemy.includes(item) 
+                        == false && item != 0));
+                    if (fighting){to_add = to_add.filter(item => item != 4);}  // 不能招李伏
+                    if (charac_enemy[i] < 11 && charac_enemy[i] > 2)
+                    {if_high = true;}  // 高阶叫高阶不受概率限制
+                    if (if_high == false)
+                    {to_add = to_add.filter(item => (item == 2 || item >= 11));}
+                    if (to_add.length>=1)
+                    {
+                        add_c = to_add[Math.floor(Math.random()*to_add.length)];
+                        charac_action[charac_enemy[i]] -= 1
+                        c_go_e = charac_enemy[i]
+                        break;
+                    }                    
+                }
+            }  
+        }
+        // 输出
+        if (add_c != 0)
+        {
+            if (charac_our.includes(add_c))
+            {new_output = "(敌方-秦直加入)秦直被" + characters[c_go_e] + "策反。";}
+            else
+            {new_output = ""}
+        }
+        else
+        {new_output = "(敌方)无行动";}
+        update_output(new_output)
+        return [add_c, c_go_e]  // 增加的敌方和行动的敌方
+    }
+    // 生成角色加入/拒绝时的文本 竞争游说则不使用通用output
+    function output_add(eo, add, by, suc){
+        cadd = characters[add]
+        cby = characters[by]
+        if (suc){
+            new_output = "(" + eo + "方-" + cadd + "加入)" + cby + "招募" + cadd + "。";
+            if (talk_output.hasOwnProperty(by.toString() + '+' + add.toString())) // 特殊文本
+            {new_output += talk_output[by.toString() + '+' + add.toString()]}
+            else if (talk_output.hasOwnProperty('+' + add.toString()) && if_comp == false)
+            {new_output += talk_output['+' + add.toString()];}
+        }
+        else{
+            new_output = "(" + eo + "方-" + cadd + "拒绝)" + cby + "未能招募" + cadd + "。";
+            if (talk_output.hasOwnProperty(by.toString() + '/' + add.toString())) // 特殊文本
+            {new_output += talk_output[by.toString() + '/' + add.toString()];}
+            else if (talk_output.hasOwnProperty('/' + add.toString()) && if_comp == false)
+            {new_output += talk_output['/' + add.toString()];}
+        }
+        return new_output
+    }
+    // 竞争游说 非关系必胜 (被游，敌游，己游)
+    function talk_compete(c_comp, c_go_e, c_go){ 
+        update_output("(竞争游说)有意或无意，敌我双方招揽的目标是同一个人。")
+        // rt 0敌胜 1己胜 2双输+被游退场
+        // 是否同势力
+        if (charac_side[c_comp] == charac_side[c_go_e] && charac_side[c_comp] != charac_side[c_go])
+        {
+            update_output(characters[c_comp] + "选择帮助同属" + sides[charac_side[c_comp]] + "的" + characters[c_go_e])
+            rt = 0;}  // 敌方同己方不同
+        else if (charac_side[c_comp] != charac_side[c_go_e] && 
+            charac_side[c_comp] == charac_side[c_go]&& charac_side[c_comp] != 0 )
+        {
+            update_output(characters[c_comp] + "选择帮助同属" + sides[charac_side[c_comp]] + "的" + characters[c_go])
+            rt = 1;}  // 敌方不同己方同
+        else if (compete[0].includes(c_comp)){  // 修为
+            for(var n=0;n<charac_coef.length;n++){
+                if (charac_coef[n].includes(c_go_e)){
+                    ne = n+0;
+                    break;
+                }
+            }
+            for(var n=0;n<charac_coef.length;n++){
+                if (charac_coef[n].includes(c_go)){
+                    no = n+0;
+                    break;
+                }
+            }
+            new_output = characters[c_comp] + "看重修为高低。"
+            if (ne < no) {rt = 0; 
+                new_output+= characters[c_comp] + "选择帮助" + characters[c_go] + "。";}
+            else if (ne > no) {rt = 1;
+                new_output+= characters[c_comp] + "选择帮助" + characters[c_go_e] + "。";}
+            else {rt = 2;
+                new_output+= "面对两拨人的游说，" + characters[c_comp] + "未加入任何一方。";}
+            update_output(new_output)
+        }
+        else if (compete[1].includes(c_comp)){
+            rt = 2;
+            update_output(characters[c_comp] + "不愿被卷入纷争。")}  // 退场
+        else if (compete[2].includes(c_comp)){  // 弹窗事件
+            which_p = 'c' + c_comp.toString();
+            rt = -1  // 应从modals读取结果
+            show_modals(which_p);
+        }
+        else {alert("Error：怎么还有别的情况啊" + c_comp.toString())}
+        // 处理结果 suc_our, suc_ene, if_pop
+        if (rt == 0){return [false, true, false]}
+        else if (rt == 1){return [true, false, false]}
+        else if (rt == 2){
+            charac_totalk[charac_totalk.indexOf(c_comp)] = 0  // 离开
+            return [false, false, false]}
+        else if (rt == -1) {return [false, false, true]}
+    }
+    // 获取游说信息
+    function talk_info(){
+        // 己方被游说的角色
+        c_to = 0
+        idname = "charac_to"
+        for(var n=0;n<charac_totalk.length;n++)
+        {
+            ct = document.getElementById(idname + (n+1).toString());
+            if (ct.checked)
+            {
+                ct.checked = false
+                c_to = charac_totalk[n];
+                where_to = n+0;
+                break;
+            }
+        }
+        // 己方去游说的角色
+        c_go = 0
+        idname = "charac_go"
+        for(var n=0;n<charac_our.length;n++)
+        {
+            cg = document.getElementById(idname + (n+1).toString());
+            if (cg.checked)
+            {
+                cg.checked = false 
+                c_go = charac_our[n];
+                break;
+            }
+        }
+        // 未游说时弹窗
+        if(c_go==0 || c_to==0){
+            alert("未选择游说人/对象")
+            return
+        }
+        // 敌人的招募
+        rt = add_enemy() 
+        c_add_e = rt[0]
+        c_go_e = rt[1]
+        // 判断结果
+        suc = false  // 己方游说是否成功 
+        suc_e = true   // 敌方游说是否成功 
+        if (c_add_e == 0) {suc_e = -1;} //敌方无行动
+        if_comp = (c_add_e == c_to)  // 是否竞争
+        if_pop = false  // 是否弹窗
+        if (nominus_suc.hasOwnProperty(c_go) && nominus_suc[c_go].includes(c_to)){   
+            suc=true;  // 不消耗次数+必成功的游说组合 
+            if (if_comp) {suc_e=false;}  // 竞争则必胜
+        }
+        else if (mayminus_suc.hasOwnProperty(c_go) && mayminus_suc[c_go].includes(c_to))
+        {
+            // 0.5消耗次数+必成功
+            suc=true;
+            if (Math.random() > 0.5)
+            {charac_action[c_go] -= 1}  // 行动次数-1  
+            if (if_comp) {suc_e=false;}  // 竞争则必胜
+        }
+        else if(c_to==6 || c_to==7  || ((c_go==1 || c_go==11) && c_to==12)
+            || (c_to==4 && c_go!=11) || (c_to==10 && charac_enemy.includes(10)))
+        {
+            // 消耗次数且0.5概率失败，即齐瀚、澹台涛被游，陆绮被金丹，李伏被白澈以外，敌方秦直
+            charac_action[c_go] -= 1  // 行动次数-1  
+            if (if_comp) {
+                [suc, suc_e, if_pop] = talk_compete(c_add_e, c_go_e, c_go);}  // 竞争胜利时不看概率
+            else{   // 非竞争
+                if (Math.random() > 0.5)
+                {suc=true;}
+                else
+                {suc=false;}
+            }
+        }
+        else if(c_to==3 &&c_go!=1)
+        {
+            // 消耗次数且0.8概率失败，即封铮被玲以外（好耶！）这种情况没有竞争招募
+            charac_action[c_go] -= 1;
+            if (Math.random() > 0.8)
+            {suc=true;}
+            else
+            {suc=false;}
+        }
+        else if (c_go==14 && charac_side[c_to]==3)  // 袁尚游说归藏门
+        {suc=false;}
+        else  // 其他，消耗次数+成功
+        {          
+            charac_action[c_go] -= 1; 
+            if (if_comp) {
+                [suc, suc_e, if_pop] = talk_compete(c_add_e, c_go_e, c_go);}  // 竞争
+            else{   // 非竞争
+                suc=true;
+            } 
+        }
+        if (!if_pop){talk_result();}  //非弹窗竞争在此处结算
+    }
+    // 游说的后续处理，供talk_info和handlemodals调用
+    function talk_result(){
+        // 修改敌方招募角色位置
+        if (suc_e)
+        {
+            charac_enemy[charac_enemy.indexOf(0)] = c_add_e;
+            if (charac_our.includes(c_add_e))
+            {charac_our[charac_our.indexOf(c_add_e)] = 0;}
+            else if (charac_totalk.includes(c_add_e) && c_add_e != 10)  // 秦直不移除
+            {charac_totalk[charac_totalk.indexOf(c_add_e)] = 0;}
+        }
+        if (suc_e != -1){
+            new_output = output_add("敌", c_add_e, c_go_e, suc_e)
+            update_output(new_output)
+        }
+        // 输出和转移己方角色
+        if (suc)
+        {
+            charac_our[charac_our.indexOf(0)] = c_to
+            charac_totalk[where_to] = 0
+            if (c_to == 10 && charac_enemy.includes(10))
+            {charac_enemy[charac_enemy.indexOf(10)] = 0;}  // 秦直
+        }
+        else
+        {
+            if (c_go == 1){charac_action[1]+=1;}  // 玲失败时不减行动的机制在此处处理
+            new_output = output_add('己', c_to, c_go, false)
+        }
+        new_output =  output_add("己", c_to, c_go, suc)
+        update_output(new_output)
+        // 实时更新影响力
+        cal_effect()
+        // 更新其他
+        update_cango()
+        update_our()
+        update_enemy()
+        update_totalk()
+        update_influence_values();  // 更新影响力标签
+
+    }
+
+    function after_by(charac_oppo, charac_be){ // 影响 被影响
+        // 计算角色当前影响力
+        effect_be = {}
+        for (var i=0;i<charac_be.length;i++)
+        {effect_be[charac_be[i]] = 5;}  // 初始
+        // 被影响
+        if (charac_oppo.includes(6)){  // 被齐瀚-1
+            for (var i=0;i<byqi.length;i++)
+            {
+                if (effect_be.hasOwnProperty(byqi[i]))
+                {effect_be[byqi[i]] -= 1;}
+            }
+        }
+        if (charac_oppo.includes(7)){  // 被澹台涛-1
+            for (var i=0;i<bydan.length;i++)
+            {
+                if (effect_be.hasOwnProperty(bydan[i]))
+                {effect_be[bydan[i]] -= 1;}
+            }
+        }
+        if (charac_oppo.includes(10)){  // 被秦-1
+            for (var i=0;i<byqin.length;i++)
+            {
+                if (effect_be.hasOwnProperty(byqin[i]))
+                { effect_be[byqin[i]] -= 1;}
+            }
+        }
+        if (charac_oppo.includes(17) && byzhou == ''){  // 被周纪-1
+            tobe = charac_be.filter(item => (item !=0 &&item !=3 &&item !=4));
+            be = Math.floor(Math.random()*tobe.length);
+            if (effect_be[tobe[be]]>0){effect_be[tobe[be]] -= 1;}
+            byzhou = tobe[be];  // 标记一下
+        }
+        // 自身影响
+        for (var i=0;i<charac_be.length;i++)
+        {
+            // 全局
+            if (effect_self_all.hasOwnProperty(charac_be[i]))
+            {
+                effect_be[charac_be[i]] += effect_self_all[charac_be[i]];
+            }
+            // 取决于地点
+            k = charac_be[i].toString() + '-' + ep_now.toString()
+            if (effect_self_place.hasOwnProperty(k))
+            {
+                effect_be[charac_be[i]] += effect_self_place[k];
+            }
+        }
+        if (charac_oppo.includes(18) && bymeng == '' && 
+            document.getElementById("place").innerHTML=='淮山'){  // 被孟蝶=0  此项须在最后
+            tobe = charac_be.filter(item => (item == 2 || (item >= 11 && item <100)));
+            be = Math.floor(Math.random()*tobe.length);
+            effect_be[tobe[be]] = 0;
+            bymeng = tobe[be];  // 标记一下
+        }
+        return effect_be
+    }
+    // 计算和刷新影响力
+    function result_notjoin(){
+        c1 = event_charac_side1[event_now]
+        c2 = event_charac_side2[event_now]
+        effect_charac = Object.assign(after_by([c1], [c2]),
+            after_by([c2], [c1]))
+        for (var i=0;i<coef.length;i++){
+            if(charac_coef[i].includes(c1))
+                {effect1 = coef[i]*effect_charac[c1];}
+            if(charac_coef[i].includes(c2))
+                {effect2 = coef[i]*effect_charac[c2];}
+        }
+        // 判断结果
+        if (effect1 - effect2 > 0){
+            menpai_change([c1], [c2]);
+            return "未干涉事件，" + characters[c1] + "胜利";
+        }
+        else if (effect1 - effect2 < 0){
+            menpai_change([c2], [c1]);
+            return "未干涉事件，" + characters[c2] + "胜利";
+        }
+        else{
+            return "未干涉事件，平局";
+        }
+    }
+    function cal_effect(){
+        // 未干涉
+        if (charac_enemy[0] == 0){return "None";}
+        // 角色去掉0
+        ce = charac_enemy.filter(item => item != 0);
+        co = charac_our.filter(item => item != 0);
+        effect_charac = Object.assign(after_by(ce, co),
+            after_by(co, ce))
+        // 加权求和
+        effect_e = 0
+        effect_o = 0 
+        for (var i=0;i<coef.length;i++)
+        {
+            for(var j=0;j<co.length;j++)
+            {
+                if(charac_coef[i].includes(co[j]))
+                {effect_o += coef[i]*effect_charac[co[j]];
+                effect_charac_weighted[co[j]] = coef[i]*effect_charac[co[j]];}
+            }
+            for(var j=0;j<ce.length;j++)
+            {
+                if(charac_coef[i].includes(ce[j]))
+                {effect_e += coef[i]*effect_charac[ce[j]];
+                effect_charac_weighted[ce[j]] = coef[i]*effect_charac[ce[j]];}
+            }
+        }
+        effect_dev = effect_o - effect_e
+        // update info
+        ene_efftxt = document.getElementById("ene_efftxt")
+        ene_efftxt.innerHTML = "敌方总影响力：" + effect_e.toString() + "<br>"
+        our_efftxt = document.getElementById("our_efftxt")
+        our_efftxt.innerHTML = "己方总影响力：" + effect_o.toString() + "<br>"
+        // update analysis
+        aotxt = ""
+        if (document.getElementById("place").innerHTML == "")
+        {aotxt += "此事不归任何势力管辖。<br>"}
+        else
+        {aotxt += "此事归" + document.getElementById("place").innerHTML + "管辖。<br>"}
+        if (effect_dev > 0){mpwill = menpai_cal(charac_our, charac_enemy);}
+        else if (effect_dev < 0){mpwill = menpai_cal(charac_enemy, charac_our);}
+        else{mpwill = [0, 0, 0, 0, 0];}
+        if (mpwill.toString() === [0, 0, 0, 0, 0].toString()) {aotxt += "两岳局势不会变化。<br>";}
+        else{
+            for(var n=1;n<=5;n++){
+                if (mpwill[n-1]>15){aotxt += sides[n] + "的势力值将大幅上升。<br>";}
+                else if (mpwill[n-1]>0){aotxt += sides[n] + "的势力值将小幅上升。<br>";}
+                else if (mpwill[n-1]<-15){aotxt += sides[n] + "的势力值将大幅下降。<br>";}
+                else if (mpwill[n-1]<0){aotxt += sides[n] + "的势力值将小幅下降。<br>";}
+            }
+        }
+        if(event_now == 3 && ((charac_enemy[0] == 2 && effect_dev < 0)
+             || (charac_our[1] == 2 && effect_dev > 0) || 
+             (charac_enemy[0] != 2 && charac_our[1] != 2))) 
+            {aotxt += "郦自衡的筹备进度将增加。<br>郦自衡会根据凌虚阁的现状抽调物资。凌虚阁越繁荣，他吞下的就越多。<br>";}
+        document.getElementById("analysisoutput").innerHTML = aotxt
+        // alert(JSON.stringify(effect_charac))   // DEBUG
+        return effect_dev
+    }
+    // 应用势力值变化
+    function menpai_change(charac_win, charac_lose){
+        mpwill = menpai_cal(charac_win, charac_lose)
+        idname = "menpai"
+        for(var n=1;n<=5;n++){
+            mp = document.getElementById(idname + n.toString());
+            mp.value += mpwill[n - 1];
+        }
+    }
+    // 计算势力值变化
+    function menpai_cal(charac_win, charac_lose){
+        // 胜方 非高阶每人+5 化神每人+15 出窍+30
+        // 败方 -sum(win) 低阶高阶承担比例3:1
+        // 玲无影响
+        all_affect = {}
+        need_minus = 0.0
+        for(var i=0;i<charac_win.length;i++)
+        {
+            if (charac_coef[1].includes(charac_win[i]))
+            {   
+                // 胜方化神
+                all_affect[charac_win[i]] = 15;
+                need_minus += 15;
+            }
+            else if (charac_coef[0].includes(charac_win[i]))
+            {   
+                // 胜方出窍
+                all_affect[charac_win[i]] = 30;
+                need_minus += 30;
+            }
+            else if ((charac_win[i] == 2 || charac_win[i] >= 11) && charac_win[i] < 100)
+            {   
+                // 胜方非高阶
+                all_affect[charac_win[i]] = 5;
+                need_minus += 5;
+            }
+        }
+        charac_lose = charac_lose.filter(item => item > 1)
+        charac_lose_low = charac_lose.filter(item => ((item == 2 || item >= 11)))
+        need_minus_part = need_minus/(charac_lose_low.length*2 + charac_lose.length)  // 一份
+        for(var i=0;i<charac_lose.length;i++)
+        {
+            if(charac_lose[i] > 2 && charac_lose[i] < 11){
+                // 败方高阶
+                all_affect[charac_lose[i]] = -need_minus_part;
+            }
+            else if (charac_lose[i] == 2 || charac_lose[i] >= 11){
+                // 败方非高阶
+                all_affect[charac_lose[i]] = -need_minus_part*3;
+            }
+        }
+        // 进度条
+        mpwill = [0, 0, 0, 0, 0]
+        for(var n=1;n<=5;n++)
+        {
+            for(var i=0;i<side_character[n].length;i++)
+            {
+                if(all_affect.hasOwnProperty(side_character[n][i]))
+                {mpwill[n - 1] += all_affect[side_character[n][i]];}
+            }
+        }
+        // 双方势力影响力差值小于10时，所有势力值变化都折半
+        if (Math.abs(effect_dev) < 10) {
+            for(var n=0;n<mpwill.length;n++) {
+                mpwill[n] *= 0.5;
+            }
+        }
+        return mpwill
+    }
+    // 判断游戏胜负
+    function winorfail(){
+        mp_limit = 100
+        end = true
+        if (document.getElementById("menpai1").value >= mp_limit) 
+        {
+            output = "冯长老的梦[BAD END]<br>冯长老简直不敢相信自己的眼睛。掌门屡屡贪腐，归藏门与古柯宗虎视眈眈——在如此恶劣的情况下，凌虚阁居然、居然崛起了？他反复暗示玲：他们应当将道尊封铮请上高位，然后一统西岳。<br>如今的凌虚阁已不再适合郦自衡的谋划，所以他离开了。玲也失去了查清真相的机会。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai1").value <= 0){
+            output = "同归于尽[BAD END]<br>局势倾覆，敌人如山洪般淹没了凌虚阁。掌门不得人心、长老力有不逮，再没谁撑得住局面。混乱的一夜过后，楼阁坍塌，万象楼被劫掠一空，凌虚阁修士们四散奔逃。至于玲和郦自衡，他们谁也没能达成自己的目的。<br>许多人都认为凌虚阁倒台是迟早的事。郦自衡则不然，他问玲：“你真不是故意的？”"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai2").value >= mp_limit){
+            output = "暴乱之始[BAD END]<br>齐瀚的野心远比“古柯宗之主”更高，他早就想吞下整个西岳。过分强盛的古柯宗开始侵扰其他势力：起初，古柯宗用或真或假的借口挑起战乱；到后来，齐瀚已不费心去寻什么借口——掠夺即是掠夺的原因，压迫即是压迫的道理。<br>这不是玲或郦自衡想要的未来。郦自衡啧声：“真没办法，先解决眼前的麻烦吧。”"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai2").value <= 0){
+            output = "混沌之地[BAD END]<br>齐瀚死得合乎情理：他树敌太多，如今古柯宗式微，自然有人来收割他的性命。很多人盯上空悬的掌门之位，但没谁能像齐瀚一样管住古柯宗的诸多暴徒。齐瀚的铁血手腕是一柄双刃剑，它一视同仁地斩下抗命者的头颅，无辜的血和罪恶的血流得一样多。<br>玲不得不暂时放弃调查，努力地平息纷争。至于郦自衡，他以消耗战的姿态，耐心等待时机。"  // 如果仇恨的目光能汇成河流，那么整个古柯宗都会被淹没成汪洋。
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai3").value >= mp_limit){
+            output = "风必摧之[BAD END]<br>或许白圭没有称霸西岳之心，但是木秀于林的归藏门招致了太多敌视，没有人相信白圭的辩解。冲突越来越频繁，西岳越来越危险，归藏门再也不是一处庇护所。许久之后白圭才发觉，不知何时起，他竟不敢让儿子白澈归家小住。<br>玲不得不暂时放弃调查，努力地平息纷争。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai3").value <= 0){
+            output = "火光冲天[BAD END]<br>西岳没有弱者生存的空间。日渐式微的归藏门无力自保，于是它上千年来积累的财富和知识，白家世代生息的居所，全都被付之一炬。不过，归藏门不会就此终结：归藏门修士因为师徒传承和血缘彼此相连，是两岳最团结的一股势力；他们还有机会从头再来。<br>玲不得不暂时放弃调查，努力地平息纷争。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai4").value >= mp_limit){
+            output = "宗派纷争[BAD END]<br>越来越多的追随者加入淮山的庙宇，香火盛极一时。然而，淮山内外的冲突也随之增加。渐渐地，淮山失去了它散漫无为的和平，变成宗派纷争的战场。人们都说，从未见过澹台真人像如今这样频频叹息。<br>玲不得不暂时放弃调查，努力地平息纷争。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai4").value <= 0){
+            output = "灭佛[BAD END]<br>西岳没有弱者生存的空间。淮山式微，澹台涛被杀；玲登上辩经台，用淮山的辩经传统拖延时间，直到封铮赶来。整整七日，没有一个人能驳倒她。郦自衡亦旁观了七日。玲几乎虚脱的时候，他远远地示范，教给她一种驱散疲惫的法术。<br>灭派的危机被暂时化解，但远没有结束。玲不得不暂时放弃调查，努力地为淮山奔走。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai5").value >= mp_limit){
+            output = "南橘北枳[BAD END]<br>李伏为东岳带来盛世，那么，什么时候轮到西岳呢？李伏回应了人们的期待。他试图用律法治理西岳，但西岳以混乱和阳奉阴违回报他。公正的利剑斩不绝罪孽，反而带来更多鲜血。人们渐渐对李伏失去信心，由此，乱世降临两岳。<br>玲不得不暂时放弃调查，努力地平息纷争。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("menpai5").value <= 0){
+            output = "礼崩乐坏[BAD END]<br>东岳的情况一日不如一日。李伏励精图治，可他总被封铮缠斗，难以脱身。没有李伏主持大局，《东律》名存实亡，无视律法的人比遵守它的人更多。<br>玲不得不暂时放弃调查，努力地为东岳奔走。至于郦自衡，他以消耗战的姿态，耐心等待时机。"
+            show_modals_end(output);
+        }
+        else if (document.getElementById("invest").value >= 100){
+            output = "怎么不叫我[GOOD END]<br>玲率先完成了调查。原来修士兴建的聚灵阵会为凡人带来灭顶之灾；原来郦自衡在替凡人做事，他盗走数不尽的物资，为一场即将到来的战争做准备。真是的，这么大的事，怎么不叫上她？<br>总之，玲斡旋于仙凡两界，巧妙地拨弄权力的天平。一次次的谈判后，战争最终没有发生，双方立下和平的盟约——至少在玲心目中，这是最好的结局。<br><br>*★,°*:.☆\\(￣▽￣)/:*.°★* <br>恭喜你，达成了本游戏的最佳结局！"
+            show_modals_end(output);
+        }
+        else if(document.getElementById("carry").value >= 100){
+            output = "倾覆山河[NORMAL END]<br>郦自衡技高一筹。他叛逃、高调地让整个修道界知道他在为谁做事：凡人。凡人的势力从幽微处滋长，他们想拥有一片独属于自己的土地，而且修士无法随手毁灭它。郦自衡窥见他们的谋算，为他们用力推了一把。<br>但是，本不必有战争，不必流这么多血。玲想。如果当初她调查得再快点就好了。"
+            show_modals_end(output);
+        }
+        else
+        {end = false}
+        return end
+    }
+    // 完成一个事件
+    function finish_eve() {
+        effect_dev = cal_effect()
+        if (effect_dev == 'None'){new_output = result_notjoin();} // 未加入
+        else{
+            // 调查和势力值变化
+            inv = document.getElementById("invest");  
+            car = document.getElementById("carry");  
+            if (effect_dev > 0)  // 加入且胜利
+            {
+                menpai_change(charac_our, charac_enemy);
+                inv.value += 5;
+                new_output = "(事件结果)己方胜利";
+            }
+            else if (effect_dev < 0)  // 加入且失败
+            {
+                menpai_change(charac_enemy, charac_our);
+                new_output = "(事件结果)己方失败"; 
+            }
+            else {new_output = "(事件结果)平局"; }  // 平局
+        }
+        //  转移进度变化
+        // 物资调动
+        if(event_now == 3 && ((charac_enemy[0] == 2 && effect_dev < 0)
+             || (charac_our[1] == 2 && effect_dev > 0) || 
+             (charac_enemy[0] != 2 && charac_our[1] != 2)))  // 郦成功  
+        {
+            mp1 = document.getElementById("menpai1")
+            if (mp1.value > 100 - car.value)  // 吃空
+            {
+                mp1.value -= 100 - car.value
+                car.value = 100;
+            }
+            else {
+                car.value += mp1.value*0.7;
+                mp1.value -= mp1.value*0.7;
+            }
+        }
+        // 弹劾
+        if(event_now == 5 && ((charac_enemy[0] == 2 && effect_dev > 0)
+             || (charac_our[1] == 2 && effect_dev < 0)))  // 郦归还  
+        {
+            mp1 = document.getElementById("menpai1")
+            mp1.value += car.value*0.2;
+            car.value -= car.value*0.2;
+        }
+        // 输出文字
+        update_output(new_output)
+        // 李伏封铮状态变化
+        if ((event_now == 1 && charac_our[1] == 4 && effect_dev > 0)||
+            (event_now == 1 && charac_enemy[0] == 4 && effect_dev < 0))
+        {fighting = false;
+            show_modals_end("李伏和封铮停止打架。<br>接下来的事件中，他们可能会出场。")}  // 李伏胜利
+        // 钟回来
+        if ((event_now == 142 && charac_our[1] == 7 && effect_dev > 0)||
+            (event_now == 142 && charac_enemy[0] == 7 && effect_dev < 0))
+        {clockback = true;
+            show_modals_end("淮山终于取回了钟。")}
+        // 石狮子
+        if ((event_now == 15 && charac_our[1] == 5 && effect_dev > 0)||
+            (event_now == 15 && charac_enemy[0] == 5 && effect_dev < 0))
+        {show_modals_end("降伏石狮子之后，白圭仔细调查始末。原来，石狮子附近住着归藏门管事余敏亭。它从全年无休的余管事身上吸收到了太多怨气，多到足以让石头活过来。总之，白圭施了辟邪的法术，以后不会再发生石狮子伤人的事情了。<br>没有人责怪余管事。因为她真的已经很惨了。");}
+        // 南枫客
+        if (event_now == 17){
+            if (effect_dev == 0){show_modals_end("一夜过去，真人们仍然不分胜负。难得地，他们达成一致，将这坛好酒均分了。");}
+            else if(effect_dev > 0) {show_modals_end(characters[charac_our[1]] + "得意地捞起酒坛，抛下醉倒在地的一众真人，乘风而去。");}
+            else if(effect_dev < 0) {show_modals_end(characters[charac_enemy[0]] + "得意地捞起酒坛，抛下醉倒在地的一众真人，乘风而去。");}
+        }
+        // 布偶
+        if (event_now == 18){show_modals_end("玲捏着一只订制的、封铮模样的布偶，偷偷笑了。嗯，等封铮回来，就拿给他看看吧。")}
+        // 灵草
+        if (event_now == 19 && charac_our.includes(9) == 0 && charac_enemy.includes(9) == 0 && Math.random()>0.2)
+        {show_modals_end("姜月茗突然现身。她拿出一大袋灵铢，多到足够买下一轮月亮。于是，赢家心甘情愿地将灵草转让给姜月茗了。");}
+
+        // 检查胜负
+        if (winorfail())
+        {
+            // 隐藏按钮，可查看内容
+            document.getElementById("eventdone").style.display = 'none';
+            document.getElementById("joinside1").style.display = 'none';
+            document.getElementById("joinside2").style.display = 'none';
+        }
+        else
+        {new_event();}  // 新事件
+        hide_info()
+    }
+
+    
+</script>
+
+<!-- 网页主体 -->
+</head>
+<body>
+    <h1>纵横捭阖修道界！</h1>
+    <h3>游戏背景：</h3>
+    <div style="margin-left:15px;">
+        <p>玲发觉，她的朋友、同时也是凌虚阁掌门的郦自衡，最近相当反常。面对质疑，郦自衡拒绝解释，于是玲决定自己查清真相。<br>与郦自衡相比，玲只是一名人微言轻、在修道界毫无存在感的低阶修士。不过，她有自己的专长：她真的很擅长将每一场冲突引向她想要的结局。</p>
+    </div>
+    <details open>
+        <summary style="font-size:18px; font-weight:bold;">游戏规则</summary>
+        <div style="font-size:16px; line-height:1.6;">
+            <h4>▌游戏目标</h4>
+            <em>通过策略性处理事件，满足下述条件时获胜：</em>
+            <ul>
+                <li>[玲的调查进度]达100%（揭露真相）</li>
+                <li>[郦自衡的筹备进度]&lt;100%、所有门派的势力值&gt;0%且&lt;100%（郦自衡未完成筹备，且局势稳定）</li>
+            </ul>
+    
+            <h4>▌游戏机制</h4>
+            <div style="margin-left:15px;">
+                <div><strong>流程：</strong><div>
+                <div>1. 选择阵营 → 2. 招募角色 → 3. 影响力对决 → 4. 门派势力变化</div><br>
+                <div><strong>操作：</strong></div>
+                <ol>
+                    <li>点击<button style="margin:0 3px;padding:2px 5px;">加入</button>选择事件阵营。</li>
+                    <li>勾选己方角色和招募目标，点击<button style="margin:0 3px;padding:2px 5px;">游说</button>扩大己方队伍，增加影响力。</li>
+                    <li>点击<button style="margin:0 3px;padding:2px 5px;">完成事件</button>结算事件结果。玲加入的势力胜利时，[玲的调查进度]增加。</li>
+                    <li>亦可以不介入事件，直接点击<button style="margin:0 3px;padding:2px 5px;">完成事件</button>，任其自由发展。</li>
+                </ol>
+                <div><strong>数值：</strong></div>
+                <dd>• 角色的影响力显示在角色卡右上方，主要取决于修为境界（出窍50＞化神25＞元婴5＞金丹0），其次是角色特性。其中，鼠标悬停于职位条目（如“凌虚阁掌门”）上可获取详细介绍。<br>
+                • 每次游说会消耗行动点。<br>• [玲的分析]中提示了当前事件会造成的门派势力值变化。</dd>
+            </div>
+
+            <div class="inline-block" style="font-size:16px;color: #B22222;">注意：该网页无需联网，也没有保存功能。刷新页面会导致游戏进度清空。</div><br>
+            <div class="inline-block" style="font-size:16px;">祝大家玩得开心！(～￣▽￣)～</div>
+
+        </div>
+    </details>
+    
+    <details>
+        <summary style="font-size:18px; font-weight:bold;">其他信息</summary>
+        <ol>
+            <div class="inline-block" style="font-size:16px;">版本：1.0 (2025/4/28)</div><br>
+            <div class="inline-block" style="font-size:16px;">作者：有叶（微博</div>
+            <a href="https://weibo.com/u/3075744707" target="_blank">@Gerainte</a>                
+            <div class="inline-block" style="font-size:16px;">，遇bug可私信）</div><br>
+            <div class="inline-block" style="font-size:16px;">原作：</div>
+            <a href="https://www.jjwxc.net/onebook.php?novelid=8902406" target="_blank">《总之先和武痴道尊谈恋爱吧》</a>
+            <div class="inline-block" style="font-size:16px;">（晋江）</div>
+        </ol>
+    </details>
+    <hr/>
+    <style>
+        .inline-block {display: inline;}
+        body{margin: 20px;}
+        .char-name {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .char-desc {
+            font-size: 12px;  /* 小两号 */
+            line-height: 1.4;
+            /* max-width: 100px; */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;      /* 左右15像素留白 */
+            text-align: left;     /* 左对齐 */
+            position: relative;   /* 为行动点定位做准备 */
+            min-height: 80px;     /* 保证最低高度 */
+            color: #333;           /* 深灰色文字 */
+            margin: 4px auto;      /* 居中 */
+        }
+        input[type="checkbox"]:disabled + label {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* 剩余行动点定位样式 */
+        .action-point {
+            font-size: 15px;
+            align-self: center;
+            margin-top: auto; /* 推到最下方 */
+        }
+        /* 通用角色框样式 */
+        #ene_table td,
+        #our_table td,
+        #totalk_table td {
+            border: none !important; /* 强制移除边框 */
+            border-radius: 8px;      /* 圆角 */
+            padding: 8px;           /* 内边距 */
+            text-align: center;      /* 文字居中 */
+            vertical-align: top;
+            margin: 4px;             /* 外间距 */
+        }
+        /* 敌方角色 */
+        #ene_table td {
+            background: hsla(0, 50%, 90%, 0.5);  /* 低饱和浅红 */
+            box-shadow: 0 2px 4px hsla(0, 30%, 70%, 0.2); /* 微阴影 */
+        }
+        /* 己方角色 */
+        #our_table td {
+            background: hsla(210, 50%, 90%, 0.5);  /* 低饱和浅蓝 */
+            box-shadow: 0 2px 4px hsla(210, 30%, 70%, 0.2);
+        }
+        /* 可招募角色 */
+        #totalk_table td {
+            background: #f0f0f0;  /* 浅灰色 */
+            box-shadow: 0 2px 4px rgba(200, 200, 200, 0.2);
+        }
+        .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(50,50,50,0.5);
+        z-index: 9999;
+        }
+        .modal-content {
+        background: #f0f0f0; /* 浅灰底色 */
+        color: #333; /* 深灰文字 */
+        border: 1px solid #ccc; /* 浅灰边框 */
+        margin: 15% auto;
+        padding: 25px;
+        width: 60%;
+        border-radius: 3px;
+        box-shadow: 0 2px 8px rgba(100,100,100,0.3); /* 灰色投影 */
+        }
+        .button-group {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        }
+        .button-group button {
+        background: rgb(211, 211, 211); /* 灰色按钮 */
+        border: 1px solid rgb(211, 211, 211); /* 灰边框 */
+        padding: 10px 25px;
+        border-radius: 2px;
+        transition: all 0.2s;
+        }
+        /* 新增影响力数值样式 */
+        .influence-value {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #666;
+            padding: 3px 6px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+}
+    </style>
+
+    <!-- 开局初始化 -->
+    <div class="inline-block" style="font-size:18px;">准备好了？那就开始吧！  </div>
+    <button id="start" style="zoom:110%;">重开一局</button>
+    
+    <!-- 门派势力值 -->
+    <p style="font-size:18px;">门派势力值：</p>
+    
+    <table width="720" border="0">
+        <tr>
+            <td style="height:30px;width:100px;text-align:center;vertical-align:top;">
+                <div class="inline-block" style="font-size:16px;">凌虚阁：</div>
+                <progress value="0" max="100" id="menpai1" style="zoom:100%;"></progress>
+            </td>
+            <td style="width:20px;text-align:center;vertical-align:top;">
+                <div class="inline-block" style="font-size:16px;">古柯宗：</div>
+                <progress value="0" max="100" id="menpai2" style="zoom:100%;"></progress>
+            </td>
+            <td style="width:20px;text-align:center;vertical-align:top;">
+                <div class="inline-block" style="font-size:16px;">归藏门：</div>
+                <progress value="0" max="100" id="menpai3" style="zoom:100%;"></progress>
+            </td>
+        </tr>
+        <tr>
+            <td style="height:30px;width:100px;text-align:center;vertical-align:top;">
+                <div class="inline-block" style="font-size:16px;">淮山：</div>
+                <progress value="0" max="100" id="menpai4" style="zoom:100%;"></progress>
+            </td>
+            <td style="width:20px;text-align:center;vertical-align:top;">
+                <div class="inline-block" style="font-size:16px;">东岳：</div>
+                <progress value="0" max="100" id="menpai5" style="zoom:100%;"></progress><br><br>
+            </td>
+        </tr>
+    </table>
+    <!-- 事件情报 -->
+    <div class="inline-block" style="font-size:20px;" >当前事件：[</div>
+    <div class="inline-block" style="font-size:20px;" id="eve_name">？</div>
+    <div class="inline-block" style="font-size:20px;">]</div>
+    <div class="inline-block" id="place", style="font-size:14px;"></div>
+    <p id="eve_desc"></p>
+    <div class="inline-block" style="font-size:18px;">冲突双方：</div>
+    <div class="inline-block" id="side1charc" style="font-size:18px;"></div>
+    <div class="inline-block" id="side1" style="font-size:14px;">？</div>
+    <button id="joinside1" style="zoom:110%;">加入</button>
+    <div class="inline-block" style="font-size:24px;"><b>⚔</b></div>
+    <div class="inline-block" id="side2charc" style="font-size:18px;"></div>
+    <div class="inline-block" id="side2" style="font-size:14px;"></div>
+    <button id="joinside2" style="zoom:110%;">加入</button><br><br>
+    <!-- 敌方信息 -->
+    <div class="inline-block" style="font-size:18px;" id="ene_efftxt"></div>
+    <div class="inline-block" style="font-size:18px;" id="ene_chatxt"></div>
+    <table width="980" border="0" id="ene_table">
+        <tr>
+            <td id="tdenemy1">
+                <p id="enemy1"></p>
+                <div class="char-desc" id="enemy1_desc"></div>
+                <div class="action-point" id="enecango1"></div>
+            </td>
+            <td id="tdenemy2">
+                <p id="enemy2"></p>
+                <div class="char-desc" id="enemy2_desc"></div>
+                <div class="action-point" id="enecango2"></div>
+            </td>
+            <td id="tdenemy3">
+                <p id="enemy3"></p>
+                <div class="char-desc" id="enemy3_desc"></div>
+                <div class="action-point" id="enecango3"></div>
+            </td>
+            <td id="tdenemy4">
+                <p id="enemy4"></p>
+                <div class="char-desc" id="enemy4_desc"></div>
+                <div class="action-point" id="enecango4"></div>
+            </td>
+            <td id="tdenemy5">
+                <p id="enemy5"></p>
+                <div class="char-desc" id="enemy5_desc"></div>
+                <div class="action-point" id="enecango5"></div>
+            </td>
+            <td id="tdenemy6">
+                <p id="enemy6"></p>
+                <div class="char-desc" id="enemy6_desc"></div>
+                <div class="action-point" id="enecango6"></div>
+            </td>
+            <td id="tdenemy7">
+                <p id="enemy7"></p>
+                <div class="char-desc" id="enemy7_desc"></div>
+                <div class="action-point" id="enecango7"></div>
+            </td>
+        </tr>
+    </table>
+    <div class="inline-block" id="br1"></div>
+    <!-- 游说模块 -->
+    <div class="inline-block" style="font-size:18px;" id="totalktxt"></div>
+    <table width="840" border="0" id="totalk_table">
+        <tr>
+        <td id="tdctotalk1">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to1" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk1"> </label><br>
+            <div class="char-desc" id="ctotalk1_desc"></div>
+            <p id="totalkstat1"></p> 
+        </td>
+        <td id="tdctotalk2">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to2" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk2"> </label><br>
+            <div class="char-desc" id="ctotalk2_desc"></div>
+            <p id="totalkstat2"></p>
+        </td>
+        <td id="tdctotalk3">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to3" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk3"> </label><br>
+            <div class="char-desc" id="ctotalk3_desc"></div>
+            <p id="totalkstat3"></p>
+        </td>
+        <td id="tdctotalk4">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to4" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk4"> </label><br>
+            <div class="char-desc" id="ctotalk4_desc"></div>
+            <p id="totalkstat4"></p>
+        </td>
+        <td id="tdctotalk5">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to5" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk5"> </label><br>
+            <div class="char-desc" id="ctotalk5_desc"></div>
+            <p id="totalkstat5"></p>
+        </td>
+        <td id="tdctotalk6">
+            <p></p>
+            <input type="radio" name="charac_to" id="charac_to6" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="ctotalk6"> </label><br>
+            <div class="char-desc" id="ctotalk6_desc"></div>
+            <p id="totalkstat6"></p>
+        </td>
+        </tr>
+    </table>
+    <div class="inline-block" id="br2"></div>
+    <div class="inline-block" style="font-size:18px;" id="our_efftxt"></div>
+    <div class="inline-block" style="font-size:18px;" id="our_chatxt"></div>
+    <table width="1120" border="0" id="our_table">
+        <tr>
+        <td id="tdcgo1">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go1" style="vertical-align:middle;zoom:150%;" >
+            <label for="1" id="cgo1"> </label><br>
+            <div class="char-desc" id="cgo1_desc"></div>
+            <div class="action-point" id="cango1"></div>
+        </td>
+        <td id="tdcgo2">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go2" style="vertical-align:middle;zoom:150%;" >
+            <label for="2" id="cgo2"> </label><br>
+            <div class="char-desc" id="cgo2_desc"></div>
+            <div class="action-point" id="cango2"></div>
+        </td>
+        <td id="tdcgo3">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go3" style="vertical-align:middle;zoom:150%;" >
+            <label for="3" id="cgo3"> </label><br>
+            <div class="char-desc" id="cgo3_desc"></div>
+            <div class="action-point" id="cango3"></div>
+        </td>
+        <td id="tdcgo4">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go4" style="vertical-align:middle;zoom:150%;" >
+            <label for="4" id="cgo4"> </label><br>
+            <div class="char-desc" id="cgo4_desc"></div>
+            <div class="action-point" id="cango4"></div>
+        </td>
+        <td id="tdcgo5">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go5" style="vertical-align:middle;zoom:150%;" >
+            <label for="5" id="cgo5"> </label><br>
+            <div class="char-desc" id="cgo5_desc"></div>
+            <div class="action-point" id="cango5"></div>
+        </td>
+        <td id="tdcgo6">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go6" style="vertical-align:middle;zoom:150%;" >
+            <label for="6" id="cgo6"> </label><br>
+            <div class="char-desc" id="cgo6_desc"></div>
+            <div class="action-point" id="cango6"></div>
+        </td>
+        <td id="tdcgo7">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go7" style="vertical-align:middle;zoom:150%;" >
+            <label for="7" id="cgo7"> </label><br>
+            <div class="char-desc" id="cgo7_desc"></div>
+            <div class="action-point" id="cango7"></div>
+        </td>
+        <td id="tdcgo8">
+            <p></p>
+            <input type="radio" name="charac_go" id="charac_go8" style="vertical-align:middle;zoom:150%;" >
+            <label for="8" id="cgo8"> </label><br>
+            <div class="char-desc" id="cgo8_desc"></div>
+            <div class="action-point" id="cango8"></div>
+        </td>
+        </tr>
+    </table>
+    <div class="inline-block" id="br3"></div>
+    <button id="talk" style="zoom:110%;">游说</button>
+    
+    <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+        <p style="width: 500px; margin: 0; font-size:15px;">历史进展：</p>
+        <p style="width: 250px; margin: 0; font-size:15px;">玲的分析：</p>
+    </div>
+    <div style="display: flex; gap: 20px; align-items: start;">
+        <div id="scrollin" style="width: 500px; height: 100px; overflow-y:scroll;">
+            <p style="font-size:15px;" id="eventoutput"></p>
+        </div>
+        <div id="analysis" style="width: 250px; height: 100px; font-size:15px;">
+            <p style="font-size:15px;" id="analysisoutput"></p>
+        </div>
+    </div>
+    <button id="eventdone" style="zoom:110%;">完成事件</button><br><br>
+    <div class="inline-block" style="font-size:16px;">玲的调查进度：</div>
+    <progress value="0" max="100" id="invest" style="zoom:150%;"></progress><br>
+    <div class="inline-block" style="font-size:16px;">郦自衡的筹备进度：</div>
+    <progress value="0" max="100" id="carry" style="zoom:150%;"></progress>
+
+    <!-- 弹窗 -->
+    <div id="Modals" class="modal">
+        <div class="modal-content">
+        <p id="modalText"></p>
+        <div class="button-group">
+            <button id="modalbutton1"></button>
+            <button id="modalbutton2"></button>
+            <button id="modalbutton3"></button>
+            <button id="endbutton"></button>  
+        </div>
+        </div>
+    </div>
+
+
+    <!-- 玩家操作反馈 -->
+    <script>
+        // document.getElementById('Modals').style.display = 'block';
+        // 初始化
+        begin_game();
+        var b_start = document.getElementById("start");
+        b_start.addEventListener("click", begin_game);
+        // 加入势力
+        var b_jside1 = document.getElementById("joinside1");
+        b_jside1.addEventListener("click", join_side1);
+        var b_jside2 = document.getElementById("joinside2");
+        b_jside2.addEventListener("click", join_side2);
+        // 游说操作
+        var b_talk = document.getElementById("talk");
+        b_talk.addEventListener("click", talk_info); 
+        // 弹窗点击
+        document.getElementById("modalbutton1").addEventListener("click", handlemodals1)
+        document.getElementById("modalbutton2").addEventListener("click", handlemodals2)
+        document.getElementById("modalbutton3").addEventListener("click", handlemodals3)
+        document.getElementById("endbutton").addEventListener("click", endmodal)
+        // 完成事件
+        var b_eventdone = document.getElementById("eventdone");
+        b_eventdone.addEventListener("click", finish_eve);
+        // document.getElementById("menpai1").value = 100  // 测试用 DEBUG
+    </script>
+
+
+    
+    </body>
+</html>
