@@ -8,7 +8,7 @@
 <script>       
     num_event = 19;  // 事件数
     event_now = 0;  // 初始化以免报错
-    event_add = [3, 3, 3]  //  增加3出现的概率
+    event_add = [3, 3]  //  增加3出现的概率
     const event_names = {
         1: "你们不要再打了啦",
         2: "你们关系很好吗",
@@ -317,11 +317,6 @@
         c_add_e = parseInt(which_p.substring(1))
         document.getElementById('Modals').style.display = 'none';
         new_output = '选择了[' + pops[which_p + "-2"][choice] + ']<br>' + pops[which_p + "-3"][choice];
-        try {   
-        } catch (error) {
-                console.error('错误发生在:', error);
-                alert('发生错误: ' + error.message);
-        }   
         if ((which_p == "c10" && choice == 0) || (which_p == "c9" && choice == 0)
         || (which_p == "c8" && choice == 2)|| (which_p == "c12" && choice == 0)){ // 所有己胜情况
             suc = true;
@@ -394,7 +389,24 @@
                 influenceElem.id = `influence_${idn}${n+1}`; // 生成唯一ID
                 // 插入到角色卡容器中
                 container.style.position = 'relative'; // 添加相对定位
-                container.appendChild(influenceElem);
+                container.appendChild(influenceElem); 
+                try {  
+                // 创建门派元素
+                const factionElem = document.createElement('div');
+                // 清除旧的门派元素
+                const existingFaction = container.querySelector(`#faction_${idn}${n+1}`);
+                if (existingFaction) {existingFaction.remove();}
+                factionElem.className = 'faction-value';
+                factionElem.id = `faction_${idn}${n+1}`;
+                // 设置门派文本
+                const sideId = charac_side[characid];
+                factionElem.textContent = sideId !== 0 ? sides[sideId] : '';
+                // 插入到角色卡容器中
+                container.appendChild(factionElem);
+                } catch (error) {
+                        console.error('错误发生在:', error);
+                        alert('发生错误: ' + error.message);
+                }   
             }
             else
             {
@@ -1576,7 +1588,18 @@
             border-radius: 12px;
             font-size: 16px;
             font-weight: bold;
-}
+        }
+        /* 添加门派样式 */
+        .faction-value {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 12px;
+        }
     </style>
 
     <!-- 开局初始化 -->
