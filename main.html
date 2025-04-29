@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>纵横捭阖修道界！</title>
+<title>test</title>
 
 <!-- 数据及操作函数 -->
 <script>       
-    num_event = 18;  // 事件数
+    num_event = 19;  // 事件数
     event_now = 0;  // 初始化以免报错
+    event_add = [3, 3, 3]  //  增加3出现的概率
     const event_names = {
         1: "你们不要再打了啦",
         2: "你们关系很好吗",
@@ -70,6 +71,7 @@
     fighting = true;  // 封李是否在打架
     clockback = false;  // 钟是否回来
     event_count = Array.from({ length: num_event+1 }, (val, i) => 0) ;  // 事件次数
+    which_p = '';  // 弹窗归零
     // 角色
     num_charac = 19;
     const characters = {
@@ -184,6 +186,7 @@
         1: [3],
         4: [11],
         5: [8, 11],
+        8: [5],
         11: [5]
     };
     // 0.5消耗次数+必成功 游: 被游
@@ -246,7 +249,7 @@
     }
     // 招募时的输出
     talk_output = {  
-        // 成功的 '游+被游'或'被游+事件+势力方'或'+被游':output  形如 (敌方-陆英华加入)
+        // 成功的 '游+被游'或'+被游':output  形如 (敌方-陆英华加入)
         // 失败的 '游/被游' '/被游'
         '1+3': '封铮不关心他们今天要去散步、喂猫，还是威慑敌人。总之玲需要他，所以他来了。',
         '2+10': '秦直奇了怪了：郦自衡分明是世上最不可信的人，可他说的话怎么听着那么有道理呢？',
@@ -314,6 +317,11 @@
         c_add_e = parseInt(which_p.substring(1))
         document.getElementById('Modals').style.display = 'none';
         new_output = '选择了[' + pops[which_p + "-2"][choice] + ']<br>' + pops[which_p + "-3"][choice];
+        try {   
+        } catch (error) {
+                console.error('错误发生在:', error);
+                alert('发生错误: ' + error.message);
+        }   
         if ((which_p == "c10" && choice == 0) || (which_p == "c9" && choice == 0)
         || (which_p == "c8" && choice == 2)|| (which_p == "c12" && choice == 0)){ // 所有己胜情况
             suc = true;
@@ -479,10 +487,10 @@
     // 初始化一局
     function begin_game(){
         new_event();
-        // 势力值随机20~80
+        // 势力值随机15~85
         menpais = document.querySelectorAll('#menpai1, #menpai2, #menpai3, #menpai4, #menpai5')
         menpais.forEach(function(s) {
-            s.value = Math.floor(Math.random()*60) + 20
+            s.value = Math.floor(Math.random()*70) + 15
         })
         // 事件进展清空
         eventoutput = document.getElementById("eventoutput");
@@ -496,6 +504,7 @@
         fighting = true;  // 封李是否在打架
         clockback = false;  // 钟是否回来
         event_count = Array.from({ length: num_event +1 }, (val, i) => 0)  // 事件次数,index+1为使用方便
+        event_add = [3, 3, 3]  //  增加3出现的概率
     }
     // 随机角色
     function random_c(sc){
@@ -548,40 +557,40 @@
     }
     // 生成新事件
     function new_event(){
-        try {   
         // 特殊情况
         // fighting = false  // DEBUG
         if (!fighting && Math.random()>0.85) 
         {
             which_p = 's1';
+            pops1 = true
             show_modals(which_p);}  // 封铮特殊弹窗
-        if (!fighting && Math.random()>0.85 && which_p != 's1' 
+        if (!fighting && Math.random()>0.85 && ! pops1
             && event_now != 1) // 和上面的弹窗冲突且上一轮不是事件1
         {
             fighting = true;
             show_modals_end("封铮又去丹峰挑战李伏了。接下来的事件中，他们不会出现。");
         }
-        else {which_p = '';}  // 归零
+        else{pops1 = false}
         // 事件序号
         available_event = Array.from({ length: num_event }, (val, i) => i+1);
         if (fighting)  // 是否包含1 2
         {available_event = available_event.filter(item => item != 2);}
         else{available_event = available_event.filter(item => item != 1);}
-        if (document.getElementById("carry").value < 50)  // 郦自衡进度低时不触发弹劾
+        if (document.getElementById("carry").value < 30)  // 郦自衡进度低时不触发弹劾
         {available_event = available_event.filter(item => item !== 5);}
+        available_event = available_event.concat(event_add)  // 提高部分事件概率
         // 陆绮问五次后弹窗，之后无事件12；大钟调查五次后弹窗，强制事件142，之后无事件14，142加入池直到成功
-        if (event_count[12] >= 4){available_event = available_event.filter(item => item !== 12);}
-        if (event_count[14] >= 4){available_event = available_event.filter(item => item !== 14);}
-        if (event_count[14] >= 4 && clockback == false){available_event.push(142);}
+        if (event_count[12] >= 2){available_event = available_event.filter(item => item !== 12);}
+        if (event_count[14] >= 2){available_event = available_event.filter(item => item !== 14);}
+        if (event_count[15] >= 1){available_event = available_event.filter(item => item !== 15);}
+        if (event_count[14] >= 2 && clockback == false){available_event.push(142);}
         event_now = available_event[Math.floor(Math.random()*available_event.length)]
-        // TODO 事件概率？
-        // if (Math.random()>0.85){event_now = 4;}  // 改事件4概率
         // event_now = 4 // DEBUG
-        event_count[event_now] += 1 // 累计次数
         if (event_count[12] == 2){show_modals_end("多方调查后，陆绮终于发现，谣言竟然是从自己家里传出来的。<br>陆英华惊奇：“什么？原来哪个都不是吗？那个总拿着折扇的也不是？”<br>陆绮深吸一口气，大喊：“娘！！不要总盯着我和谁来往了！！”");}
         if (event_count[14] == 2){show_modals_end("淮山的大钟终于找到了——某日，偷盗者兴冲冲地敲它，根本不避人，整个东岳都听见了。<br>澹台涛问：“你为什么偷我们的钟？”<br>秦直理直气壮：“淮山根本没有懂行的音修，这大钟给你们用简直是浪费。它归我了。”");
             event_now = 142
         }
+        event_count[event_now] += 1 // 累计次数
         // 事件信息
         eve_name = document.getElementById("eve_name")
         eve_name.innerHTML = event_names[event_now] 
@@ -691,10 +700,6 @@
         update_influence_values();  // 更新影响力标签
         // 分析
         document.getElementById("analysisoutput").innerHTML = ""
-        } catch (error) {
-                console.error('错误发生在:', error);
-                alert('发生错误: ' + error.message);
-        }   
     }
 
     // 隐藏表格等信息
@@ -770,7 +775,7 @@
     // 3 郦自衡按特定顺序招募可招募角色 + 他的友方角色
     // 4 郦自衡先手，其余按序列检查行动点
     li_friends = [10, 12, 14, 17]  // 郦的友方角色
-    li_priority = [8, 6, 9, 7, 10, 5, 4]  // 招募陆齐>其他化神>李伏>元婴
+    li_priority = [8, 6, 7, 9, 10, 5, 4]  // 招募陆齐>其他化神>李伏>元婴
     function add_enemy(){
         if ((charac_enemy[0] == 3 && charac_enemy[1] == 0) || charac_enemy[0]>100) 
         {return [0, 0]} // 只有封铮或秘境，不add
@@ -904,9 +909,9 @@
             }
             new_output = characters[c_comp] + "看重修为高低。"
             if (ne < no) {rt = 0; 
-                new_output+= characters[c_comp] + "选择帮助" + characters[c_go] + "。";}
-            else if (ne > no) {rt = 1;
                 new_output+= characters[c_comp] + "选择帮助" + characters[c_go_e] + "。";}
+            else if (ne > no) {rt = 1;
+                new_output+= characters[c_comp] + "选择帮助" + characters[c_go] + "。";}
             else {rt = 2;
                 new_output+= "面对两拨人的游说，" + characters[c_comp] + "未加入任何一方。";}
             update_output(new_output)
@@ -1040,15 +1045,17 @@
         {
             charac_our[charac_our.indexOf(0)] = c_to
             charac_totalk[where_to] = 0
-            if (c_to == 10 && charac_enemy.includes(10))
-            {charac_enemy[charac_enemy.indexOf(10)] = 0;}  // 秦直
+            if (c_to == 10 && charac_enemy.includes(10)){
+                charac_enemy[charac_enemy.indexOf(10)] = 0;
+                new_output =  "(己方-秦直加入)" + characters[c_go] 
+                    + "招募秦直。敌人说得太有道理，秦直收拾收拾就反水了。"}  // 秦直
+            else{new_output = output_add('己', c_to, c_go, suc)}
         }
         else
         {
             if (c_go == 1){charac_action[1]+=1;}  // 玲失败时不减行动的机制在此处处理
-            new_output = output_add('己', c_to, c_go, false)
+            new_output = output_add('己', c_to, c_go, suc);
         }
-        new_output =  output_add("己", c_to, c_go, suc)
         update_output(new_output)
         // 实时更新影响力
         cal_effect()
@@ -1262,12 +1269,12 @@
                 {mpwill[n - 1] += all_affect[side_character[n][i]];}
             }
         }
-        // 双方势力影响力差值小于10时，所有势力值变化都折半
-        if (Math.abs(effect_dev) < 10) {
-            for(var n=0;n<mpwill.length;n++) {
-                mpwill[n] *= 0.5;
-            }
-        }
+        // 双方势力影响力差值小于10时，所有势力值变化都折半  TODO 哪种难度合适
+        // if (Math.abs(effect_dev) < 10) {
+        //     for(var n=0;n<mpwill.length;n++) {
+        //         mpwill[n] *= 0.5;
+        //     }
+        // }
         return mpwill
     }
     // 判断游戏胜负
@@ -1347,6 +1354,7 @@
                 new_output = "(事件结果)己方失败"; 
             }
             else {new_output = "(事件结果)平局"; }  // 平局
+            if (inv.value > 50){event_add = [3, 3, 3, 5, 5];}  // 提高弹劾概率
         }
         //  转移进度变化
         // 物资调动
@@ -1460,7 +1468,7 @@
     <details>
         <summary style="font-size:18px; font-weight:bold;">其他信息</summary>
         <ol>
-            <div class="inline-block" style="font-size:16px;">版本：1.0 (2025/4/28)</div><br>
+            <div class="inline-block" style="font-size:16px;">版本：0.1</div><br>
             <div class="inline-block" style="font-size:16px;">作者：有叶（微博</div>
             <a href="https://weibo.com/u/3075744707" target="_blank">@Gerainte</a>                
             <div class="inline-block" style="font-size:16px;">，遇bug可私信）</div><br>
