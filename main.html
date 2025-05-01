@@ -177,7 +177,7 @@
         10: [2, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19],
         11: Array.from({ length: num_charac - 1 }, (val, i) => i + 2).filter(item => item !== 10),
         12: [2, 11, 13, 14, 15, 16, 17, 18, 19],
-        13: [2, 11, 13, 14, 15, 16, 17, 18, 19],
+        13: [2, 13, 14, 15, 16, 17, 18, 19],
         14: Array.from({ length: num_charac - 1 }, (val, i) => i + 2).filter(item => (item !== 18 && item !==7 )),
         16: [5, 7, 8, 10],
         17: [5, 6, 7, 8, 9, 10],
@@ -1286,12 +1286,12 @@
                 {mpwill[n - 1] += all_affect[side_character[n][i]];}
             }
         }
-        // 双方势力影响力差值小于10时，所有势力值变化都折半  TODO 哪种难度合适
-        // if (Math.abs(effect_dev) < 10) {
-        //     for(var n=0;n<mpwill.length;n++) {
-        //         mpwill[n] *= 0.5;
-        //     }
-        // }
+        // 双方势力影响力差值小于10时，所有势力值变化都折半
+        if (Math.abs(effect_dev) < 10) {
+            for(var n=0;n<mpwill.length;n++) {
+                mpwill[n] *= 0.5;
+            }
+        }
         return mpwill
     }
     // 判断游戏胜负
