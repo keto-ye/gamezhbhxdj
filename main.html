@@ -9,6 +9,7 @@
     num_event = 19;  // 事件数
     event_now = 0;  // 初始化以免报错
     event_add = [3, 3]  //  增加3出现的概率
+    last_event = 0;  // 伪随机，事件连续重复
     const event_names = {
         1: "你们不要再打了啦",
         2: "你们关系很好吗",
@@ -591,6 +592,7 @@
         if (document.getElementById("carry").value < 30)  // 郦自衡进度低时不触发弹劾
         {available_event = available_event.filter(item => item !== 5);}
         available_event = available_event.concat(event_add)  // 提高部分事件概率
+        available_event = available_event.filter(item => item !== last_event);  // 不重复
         // 陆绮问五次后弹窗，之后无事件12；大钟调查五次后弹窗，强制事件142，之后无事件14，142加入池直到成功
         if (event_count[12] >= 2){available_event = available_event.filter(item => item !== 12);}
         if (event_count[14] >= 2){available_event = available_event.filter(item => item !== 14);}
@@ -598,11 +600,14 @@
         if (event_count[14] >= 2 && clockback == false){available_event.push(142);}
         event_now = available_event[Math.floor(Math.random()*available_event.length)]
         // event_now = 4 // DEBUG
-        if (event_count[12] == 2){show_modals_end("多方调查后，陆绮终于发现，谣言竟然是从自己家里传出来的。<br>陆英华惊奇：“什么？原来哪个都不是吗？那个总拿着折扇的也不是？”<br>陆绮深吸一口气，大喊：“娘！！不要总盯着我和谁来往了！！”");}
+        if (event_count[12] == 2){show_modals_end("多方调查后，陆绮终于发现，谣言竟然是从自己家里传出来的。<br>陆英华惊奇：“什么？原来哪个都不是吗？那个总拿着折扇的也不是？”<br>陆绮深吸一口气，大喊：“娘！！不要总盯着我和谁来往了！！”");
+            event_count[12] += 1;}
         if (event_count[14] == 2){show_modals_end("淮山的大钟终于找到了——某日，偷盗者兴冲冲地敲它，根本不避人，整个东岳都听见了。<br>澹台涛问：“你为什么偷我们的钟？”<br>秦直理直气壮：“淮山根本没有懂行的音修，这大钟给你们用简直是浪费。它归我了。”");
-            event_now = 142
+            event_now = 142;
+            event_count[14] += 1;
         }
         event_count[event_now] += 1 // 累计次数
+        last_event = event_now+0
         // 事件信息
         eve_name = document.getElementById("eve_name")
         eve_name.innerHTML = event_names[event_now] 
@@ -787,7 +792,7 @@
     // 3 郦自衡按特定顺序招募可招募角色 + 他的友方角色
     // 4 郦自衡先手，其余按序列检查行动点
     li_friends = [10, 12, 14, 17]  // 郦的友方角色
-    li_priority = [8, 6, 7, 9, 10, 5, 4]  // 招募陆齐>其他化神>李伏>元婴
+    li_priority = [8, 6, 10, 7, 5, 9, 4]  // 招募陆>齐>秦>澹>白>姜>李伏>元婴
     function add_enemy(){
         if ((charac_enemy[0] == 3 && charac_enemy[1] == 0) || charac_enemy[0]>100) 
         {return [0, 0]} // 只有封铮或秘境，不add
