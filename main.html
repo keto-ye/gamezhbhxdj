@@ -510,6 +510,10 @@
         eventoutput.innerHTML = ""
         // 调查和转移进度=0
         inv = document.getElementById("invest");  
+        if (document.getElementById('easy').checked){  // 调查进度max 
+            inv.max = 50;  // 低难度
+        }
+        else{inv.max = 100;}
         inv.value = 0;
         car = document.getElementById("carry");  
         car.value = 0;
@@ -1476,7 +1480,7 @@
                 • 每次游说会消耗行动点。<br>• [玲的分析]中提示了当前事件会造成的门派势力值变化。</dd>
             </div>
 
-            <div class="inline-block" style="font-size:16px;color: #B22222;">注意：该网页无需联网，也没有保存功能。刷新页面会导致游戏进度清空。</div><br>
+            <div class="inline-block" style="font-size:16px;color: #B22222;">注意：该网页没有保存功能。刷新页面会导致游戏进度清空。</div><br>
             <div class="inline-block" style="font-size:16px;">祝大家玩得开心！(～￣▽￣)～</div>
 
         </div>
@@ -1610,6 +1614,8 @@
     <!-- 开局初始化 -->
     <div class="inline-block" style="font-size:18px;">准备好了？那就开始吧！  </div>
     <button id="start" style="zoom:110%;">重开一局</button>
+    <div class="inline-block" style="font-size:18px;"> </div><input type="checkbox" id="easy" />
+    <div class="inline-block" style="font-size:16px;">是否简单难度（重开一局时生效）</div>
     
     <!-- 门派势力值 -->
     <p style="font-size:18px;">门派势力值：</p>
@@ -1825,7 +1831,7 @@
     </div>
     <button id="eventdone" style="zoom:110%;">完成事件</button><br><br>
     <div class="inline-block" style="font-size:16px;">玲的调查进度：</div>
-    <progress value="0" max="100" id="invest" style="zoom:150%;"></progress><br>
+    <progress value="0" id="invest" style="zoom:150%;"></progress><br>
     <div class="inline-block" style="font-size:16px;">郦自衡的筹备进度：</div>
     <progress value="0" max="100" id="carry" style="zoom:150%;"></progress>
 
